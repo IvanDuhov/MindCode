@@ -67,8 +67,12 @@ public class UI : MonoBehaviour
 		PlayerPrefs.SetString ("B8", "true");
 
 		PlayerPrefs.SetString ("P1", "true");
-		PlayerPrefs.SetString ("P1", "true");
-		PlayerPrefs.SetString ("P1", "true");
+		PlayerPrefs.SetString ("P2", "true");
+		PlayerPrefs.SetString ("P3", "true");
+		PlayerPrefs.SetString ("P4", "true");
+		PlayerPrefs.SetString ("P5", "true");
+		PlayerPrefs.SetString ("P6", "true");
+
 	}
 
 	public void DevHelpRestart()
@@ -221,6 +225,16 @@ public class UI : MonoBehaviour
 	public void ProcedureButton4()
 	{
 		SceneManager.LoadScene ("Level P4");
+	}
+
+	public void ProcedureButton5()
+	{
+		SceneManager.LoadScene ("Level P5");
+	}
+
+	public void ProcedureButton6()
+	{
+		SceneManager.LoadScene ("Level P6");
 	}
 
 	public void MainStart()

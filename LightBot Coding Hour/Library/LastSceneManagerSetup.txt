@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/SelectionMenu.unity
+- path: Assets/Scenes/Procedures/Level P6.unity
   isLoaded: 1
   isActive: 1

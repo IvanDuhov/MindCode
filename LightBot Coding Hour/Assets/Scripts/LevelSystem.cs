@@ -18,6 +18,9 @@ public class LevelSystem : MonoBehaviour
 	string p1;
 	string p2;
 	string p3;
+	string p4;
+	string p5;
+	string p6;
 
 	string b1s;
 	string b2s;
@@ -31,6 +34,9 @@ public class LevelSystem : MonoBehaviour
 	string P1s;
 	string P2s;
 	string P3s;
+	string P4s;
+	string P5s;
+	string P6s;
 
 	public Image S1;
 	public Image S2;
@@ -44,6 +50,9 @@ public class LevelSystem : MonoBehaviour
 	public Image P1;
 	public Image P2;
 	public Image P3;
+	public Image P4;
+	public Image P5;
+	public Image P6;
 
 	public Image l2;
 	public Image l3;
@@ -105,6 +114,9 @@ public class LevelSystem : MonoBehaviour
 		p1 = PlayerPrefs.GetString ("P1");
 		p2 = PlayerPrefs.GetString ("P2");
 		p3 = PlayerPrefs.GetString ("P3");
+		p4 = PlayerPrefs.GetString ("P4");
+		p5 = PlayerPrefs.GetString ("P5");
+		p6 = PlayerPrefs.GetString ("P6");
 
 		b1s = PlayerPrefs.GetString ("B1S");
 		b2s = PlayerPrefs.GetString ("B2S");
@@ -118,6 +130,9 @@ public class LevelSystem : MonoBehaviour
 		P1s = PlayerPrefs.GetString ("P1S");
 		P2s = PlayerPrefs.GetString ("P2S");
 		P3s = PlayerPrefs.GetString ("P3S");
+		P4s = PlayerPrefs.GetString ("P4S");
+		P5s = PlayerPrefs.GetString ("P5S");
+		P6s = PlayerPrefs.GetString ("P6S");
 
 		if (BorP == "B")
 		{
@@ -302,6 +317,24 @@ public class LevelSystem : MonoBehaviour
 			} else 
 				btn3.enabled = false;
 
+			if (p3 == "true") {
+				l4.sprite = s4;
+				btn3.enabled = true;
+			} else 
+				btn4.enabled = false;
+
+			if (p4 == "true") {
+				l5.sprite = s5;
+				btn4.enabled = true;
+			} else 
+				btn5.enabled = false;
+
+			if (p5 == "true") {
+				l6.sprite = s6;
+				btn5.enabled = true;
+			} else 
+				btn6.enabled = false;
+
 			switch (P1s) 
 			{
 			case "3": P1.sprite = star3;
@@ -333,6 +366,39 @@ public class LevelSystem : MonoBehaviour
 			case "1": P3.sprite = star1;
 				break;
 			default: P3.sprite = star0;
+				break;
+			}
+			switch (P4s) 
+			{
+			case "3": P4.sprite = star3;
+				break;
+			case "2": P4.sprite = star2;
+				break;
+			case "1": P4.sprite = star1;
+				break;
+			default: P4.sprite = star0;
+				break;
+			}
+			switch (P5s) 
+			{
+			case "3": P5.sprite = star3;
+				break;
+			case "2": P5.sprite = star2;
+				break;
+			case "1": P5.sprite = star1;
+				break;
+			default: P5.sprite = star0;
+				break;
+			}
+			switch (P6s) 
+			{
+			case "3": P6.sprite = star3;
+				break;
+			case "2": P6.sprite = star2;
+				break;
+			case "1": P6.sprite = star1;
+				break;
+			default: P6.sprite = star0;
 				break;
 			}
 

@@ -39,6 +39,7 @@ namespace FTPClient
                 ftpStream = ftpResponse.GetResponseStream();
                 /* Open a File Stream to Write the Downloaded File */
                 FileStream localFileStream = new FileStream(localFile, FileMode.Create);
+                //FileStream localFileStream = File.Open(localFile, FileMode.OpenOrCreate);
                 /* Buffer for the Downloaded Data */
                 byte[] byteBuffer = new byte[bufferSize];
                 int bytesRead = ftpStream.Read(byteBuffer, 0, bufferSize);

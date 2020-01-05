@@ -7,5 +7,5 @@ public class MJ
     public int NumberOfPeopleWillingToPlay;
     public bool CurrentlyPlaying;
 
-    public PlayerProfile[] Players;
+    public List<PlayerProfile> Players;
 }

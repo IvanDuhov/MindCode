@@ -7,31 +7,45 @@ using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Converters;
 using System;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MultiplayerManager : MonoBehaviour
 {
     // public string MJpath = Application.streamingAssetsPath + "/" + "Test.json";
 
     public const string filename = "Test.json";
-    public string streamingAssets = "";
+    public string jsonPath = "";
 
     public string username = "default";
 
     public bool signedIn = false;
 
-    private bool jsonUpdated = false;
-    private bool uploadinJSON = false;
+    public bool jsonUpdated = false;
+    public bool uploadinJSON = false;
 
     FTP ftpClient;
 
-    public Transform notification;
+    public Transform matchmakingPanel;
+
+    private int secs;
+    private int mins;
+
+    public int bSecs = 90;
+
+    public Text TimeText;
+    public Text FoundGame;
+
+    public bool TestMultiplayer = false;
 
     private void Awake()
     {
-        streamingAssets = Path.Combine(Application.streamingAssetsPath, filename);
+        jsonPath = Path.Combine(Application.streamingAssetsPath, filename);
         ftpClient = new FTP(@"ftp://ftp.snejankagd.com/", "duhov@snejankagd.com", "123123");
 
-        username = DateTime.Today.ToString() + " " + UnityEngine.Random.Range(0, 200000);
+        username = username + " " + UnityEngine.Random.Range(0, 200000);
+
+        DontDestroyOnLoad(this.gameObject);
     }
 
     private void Start()
@@ -49,7 +63,7 @@ public class MultiplayerManager : MonoBehaviour
         {
             signedIn = false;
 
-            MJ Mjb = ReadJson(streamingAssets);
+            MJ Mjb = ReadJson(jsonPath);
 
             List<PlayerProfile> allPlayers = new List<PlayerProfile>();
 
@@ -65,14 +79,16 @@ public class MultiplayerManager : MonoBehaviour
             Mjb.Players = allPlayers;
 
             // Saving the signed JSON
-            SaveToJson(Mjb, streamingAssets);
+            SaveToJson(Mjb, jsonPath);
 
             // Uploading the JSON to the FTP server
-            ftpClient.upload(@"Test.json", streamingAssets);
+            ftpClient.upload(@"Test.json", jsonPath);
 
             // Triggering again the auto updation of the JSON file from the FTP server
             uploadinJSON = false;
             StartCoroutine(KeepJSONUpdated());
+
+            matchmakingPanel.gameObject.SetActive(false);
 
             print("succesfully signed off");
 
@@ -80,7 +96,10 @@ public class MultiplayerManager : MonoBehaviour
         }
 
         // Reading the JSON file
-        MJ mjb = ReadJson(streamingAssets);
+        MJ mjb = ReadJson(jsonPath);
+
+        // Making active the matchamkiing meny, where the user can see for how long he is waiting and how many players there are at the queue
+        matchmakingPanel.gameObject.SetActive(true);
 
         // IF this is the first user to sign in for multiplayer, we are creating new user in the queue for multiplayer
         if (mjb.Players.Count == 0)
@@ -120,29 +139,91 @@ public class MultiplayerManager : MonoBehaviour
         StartCoroutine(SeekForOtherPlayers());
 
         // Saving the signed JSON
-        SaveToJson(mjb, streamingAssets);
+        SaveToJson(mjb, jsonPath);
 
         // Uploading the JSON to the FTP server
-        ftpClient.upload(@"Test.json", streamingAssets);
+        ftpClient.upload(@"Test.json", jsonPath);
 
         // Triggering again the auto updation of the JSON file from the FTP server
         uploadinJSON = false;
         StartCoroutine(KeepJSONUpdated());
     }
 
+    // Checking the FTP if there are enough signed in players to play and if there are, it notifies the users and starts the game
     private IEnumerator SeekForOtherPlayers()
+    {
+        StartCoroutine(Timer());
+
+        while (signedIn)
+        {
+            // Check the ftp file for data every 1/4 sec
+            yield return new WaitForSeconds(0.25f);
+
+            MJ mjb = ReadJson(jsonPath);
+
+            // if there are enough players do that:
+            if (mjb.Players.Count == 2 || TestMultiplayer)
+            {
+                // Instead of this make text says taht is has found enoguh players to play
+                FoundGame.text = "Game found for " + DisplaySeconds(secs);
+                StopCoroutine(SeekForOtherPlayers());
+                StopCoroutine(Timer());
+                signedIn = false;
+
+                mjb.CurrentlyPlaying = true;
+                SaveToJson(mjb, jsonPath);
+                UploadInServer();
+
+                SceneManager.LoadScene("Mtest");
+            }
+        }
+    }
+
+    IEnumerator Timer()
     {
         while (signedIn)
         {
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(1f);
 
-            MJ mjb = ReadJson(streamingAssets);
+            secs++;
 
-            if (mjb.Players.Count == 2)
-            {
-                notification.gameObject.SetActive(true);
-            }
+            TimeText.text = DisplaySeconds(secs);
         }
+    }
+
+    public string DisplaySeconds(int secs)
+    {
+        if (secs == 60)
+        {
+            mins++;
+            secs = 0;
+        }
+
+        if (secs < 10)
+        {
+            return mins + ":" + "0" + secs;
+        }
+        else
+        {
+            return mins + ":" + secs;
+        }
+    }
+
+    public IEnumerator BattleTimer(Text timerText)
+    {
+        while (bSecs != 0)
+        {
+            bSecs--;
+            timerText.text = DisplaySeconds(bSecs);
+            yield return new WaitForSeconds(1f);
+        }
+
+        MJ mjb = ReadJson(jsonPath);
+        mjb.CurrentlyPlaying = false;
+        SaveToJson(mjb, jsonPath);
+        UploadInServer();
+
+        SceneManager.LoadScene("SelectionMenu");
     }
 
     // Procedure starting the coroutine for downloading the JSON file from the FTP server
@@ -171,7 +252,7 @@ public class MultiplayerManager : MonoBehaviour
 
         if (hasInternet)
         {
-            ftpClient.download(@"/Test.json", streamingAssets);
+            ftpClient.download(@"/Test.json", jsonPath);
 
             jsonUpdated = true;
         }
@@ -226,5 +307,10 @@ public class MultiplayerManager : MonoBehaviour
             serializer.Serialize(writer, mjb);
             // {"ExpiryDate":new Date(1230375600000),"Price":0}
         }
+    }
+
+    public void UploadInServer()
+    {
+        ftpClient.upload(@"Test.json", jsonPath);
     }
 }

@@ -26,38 +26,51 @@ public class UI : MonoBehaviour
     void Start()
     {
         string fix = PlayerPrefs.GetString("English");
+
         if ((fix != null) && (main != null))
         {
-            main.image.sprite = ENG;
-            PlayerPrefs.SetString("English", "true");
-        }
-
-        ass = FindObjectOfType<AudioSource>();
-        ch = FindObjectOfType<Character>();
-        lang = PlayerPrefs.GetString("English");
-
-        if (main != null)
-        {
-            if (lang == "true")
+            if (fix == "true")
             {
                 main.image.sprite = ENG;
             }
             else
+            {
                 main.image.sprite = BG;
+            }
         }
-    }
 
-    void Update()
-    {
+        ass = FindObjectOfType<AudioSource>();
+
+        fix = PlayerPrefs.GetString("audio");
+
         if (Audio != null)
         {
+            if (fix == "on")
+            {
+                Audio.sprite = onn;
+                ass.Play();
+            }
+            else
+            {
+                ass.Pause();
+                Audio.sprite = off;
+            }
+
+            /*
             if (ass == null)
                 return;
             if (ass.isPlaying == true)
                 Audio.sprite = onn;
             else
                 Audio.sprite = off;
+                */
         }
+
+        ch = FindObjectOfType<Character>();
+    }
+
+    void Update()
+    {
     }
 
     public void DevHelpPass()
@@ -89,11 +102,15 @@ public class UI : MonoBehaviour
     {
         if (ass.isPlaying == true)
         {
+            PlayerPrefs.SetString("audio", "off");
+
             ass.Pause();
             Audio.sprite = off;
         }
         else
         {
+            PlayerPrefs.SetString("audio", "on");
+
             ass.Play();
             Audio.sprite = onn;
         }
@@ -250,6 +267,18 @@ public class UI : MonoBehaviour
 
     public void MainStart()
     {
+        // If the current scene is the one with the multiplayer menu, when going back to the main scene there is no need of the MM manager
+        if (SceneManager.GetActiveScene().name == "MultiplayerMenu")
+        {
+            MultiplayerManager mm = FindObjectOfType<MultiplayerManager>();
+            print(mm.name);
+
+            if (mm != null)
+            {
+                Destroy(mm.gameObject);
+            }
+        }
+
         SceneManager.LoadScene("Menu");
     }
 

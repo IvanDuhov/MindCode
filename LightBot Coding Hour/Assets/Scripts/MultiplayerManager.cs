@@ -20,6 +20,7 @@ public class MultiplayerManager : MonoBehaviour
     public string username = "default";
 
     public bool signedIn = false;
+    public bool showWinner = false;
 
     public bool jsonUpdated = false;
     public bool uploadinJSON = false;
@@ -36,6 +37,9 @@ public class MultiplayerManager : MonoBehaviour
     public Text TimeText;
     public Text FoundGame;
 
+    public GameObject resultPanel;
+    public Text winnerLabel;
+
     public bool TestMultiplayer = false;
 
     private void Awake()
@@ -45,12 +49,31 @@ public class MultiplayerManager : MonoBehaviour
 
         username = username + " " + UnityEngine.Random.Range(0, 200000);
 
-        DontDestroyOnLoad(this.gameObject);
+        var mmSecondInstance = FindObjectOfType<MultiplayerManager>();
+
+        if (mmSecondInstance != this.gameObject)
+        {
+            DontDestroyOnLoad(this.gameObject);
+        }
     }
 
     private void Start()
     {
         StartCoroutine(KeepJSONUpdated());
+
+        var allMM = FindObjectsOfType<MultiplayerManager>();
+
+        if (allMM.Length >= 2)
+        {
+            foreach (var item in allMM)
+            {
+                if (item != this.gameObject && item.showWinner)
+                {
+                    ShowWinner();
+                    Destroy(item.gameObject);
+                }
+            }
+        }
     }
 
     // Procedure to sign the user that he wished to play multiplayer
@@ -222,8 +245,58 @@ public class MultiplayerManager : MonoBehaviour
         mjb.CurrentlyPlaying = false;
         SaveToJson(mjb, jsonPath);
         UploadInServer();
+        showWinner = true;
 
-        SceneManager.LoadScene("SelectionMenu");
+        SceneManager.LoadScene("MultiplayerMenu");
+    }
+
+    public void ShowWinner()
+    {
+        var allMM = FindObjectsOfType<MultiplayerManager>();
+        print(allMM.Length);
+
+        foreach (var item in allMM)
+        {
+            if (item.resultPanel != null)
+            {
+                resultPanel = item.resultPanel;
+                winnerLabel = item.winnerLabel;
+            }
+        }
+
+        resultPanel.SetActive(true);
+
+        MJ mjb = ReadJson(jsonPath);
+
+        string winner = "";
+        int max = -1;
+        winnerLabel.text = "All players:";
+
+        foreach (var item in mjb.Players)
+        {
+            winnerLabel.text += item.Nickname + "/n";
+
+            if (item.AmountOfBlueTilesEnlightened > max)
+            {
+                max = item.AmountOfBlueTilesEnlightened;
+                winner = item.Nickname;
+            }
+        }
+
+        winnerLabel.text += "/n Winner:" + winner;
+
+        showWinner = false;
+    }
+
+    public void Ok()
+    {
+        resultPanel.gameObject.SetActive(false);
+        MJ mjb = ReadJson(jsonPath);
+
+        mjb.Players.Clear();
+
+        SaveToJson(mjb, jsonPath);
+        UploadInServer();
     }
 
     // Procedure starting the coroutine for downloading the JSON file from the FTP server

@@ -85,13 +85,17 @@ public class LevelSystem : MonoBehaviour
 	public Sprite star2;
 	public Sprite star3;
 
-	public Image basic;
-	public Image procedures;
+	public Image basicsBtn;
+	public Image proceduresBtn;
 
-	public Sprite basicbg;
 	public Sprite procedurelockBg;
-	public Sprite procedureBG;
 	public Sprite procedurenolock;
+    public Sprite logoNoLock;
+
+    public Sprite basics;
+    public Sprite basicsBG;
+    public Sprite proceduresENG;
+    public Sprite proceduresBG;
 
 	private string lang;
 	private bool bg;
@@ -280,21 +284,24 @@ public class LevelSystem : MonoBehaviour
 			if (b8 == "true") 
 			{
 				if (bg == true) {
-					basic.sprite = basicbg;
-					procedures.sprite = procedureBG;
+					basicsBtn.sprite = basicsBG;
+					proceduresBtn.sprite = proceduresBG;
 					btns1.enabled = true;
+                    btns1.image.sprite = logoNoLock;
 				} else 
 				{
 					btns1.enabled = true;
-					procedures.sprite = procedurenolock;
-				}
+                    btns1.image.sprite = logoNoLock;
+					proceduresBtn.sprite = procedurenolock;
+                    basicsBtn.sprite = basics;
+                }
 			} 
 			else 
 			{
 				if (bg == true) {
-					basic.sprite = basicbg;
+					basicsBtn.sprite = basicsBG;
 					btns1.enabled = false;
-					procedures.sprite = procedurelockBg;
+					proceduresBtn.sprite = procedurelockBg;
 				} else 
 					btns1.enabled = false;
 

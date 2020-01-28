@@ -39,6 +39,11 @@ public class MultiplayerManager : MonoBehaviour
 
     public GameObject resultPanel;
     public Text winnerLabel;
+    public Text secondPlaceLabel;
+    public Text winnerData;
+    public Text secondPlaceData;
+    public Image winnerAvatar;
+    public Image secondPlaceAvatar;
 
     public bool TestMultiplayer = false;
 
@@ -47,7 +52,7 @@ public class MultiplayerManager : MonoBehaviour
         jsonPath = Path.Combine(Application.streamingAssetsPath, filename);
         ftpClient = new FTP(@"ftp://ftp.snejankagd.com/", "duhov@snejankagd.com", "123123");
 
-        username = username + " " + UnityEngine.Random.Range(0, 200000);
+        username = PlayerPrefs.GetString("nickname");
 
         var mmSecondInstance = FindObjectOfType<MultiplayerManager>();
 
@@ -129,6 +134,7 @@ public class MultiplayerManager : MonoBehaviour
         {
             mjb.Players.Add(new PlayerProfile());
             mjb.Players[0].Nickname = username;
+            mjb.Players[0].avatar = (byte)PlayerPrefs.GetInt("avatar");
         }
         else // If not, we are checking if there is an empty record in the queue
         {
@@ -141,6 +147,7 @@ public class MultiplayerManager : MonoBehaviour
                 if (mjb.Players[i].Nickname == null)
                 {
                     mjb.Players[i].Nickname = username;
+                    mjb.Players[i].avatar = (byte)PlayerPrefs.GetInt("avatar");
                     saved = true;
                     break;
                 }
@@ -152,6 +159,7 @@ public class MultiplayerManager : MonoBehaviour
                 print("Player added");
                 mjb.Players.Add(new PlayerProfile());
                 mjb.Players[mjb.Players.Count - 1].Nickname = username;
+                mjb.Players[mjb.Players.Count - 1].avatar = (byte)PlayerPrefs.GetInt("avatar");
             }
         }
 
@@ -261,6 +269,11 @@ public class MultiplayerManager : MonoBehaviour
             {
                 resultPanel = item.resultPanel;
                 winnerLabel = item.winnerLabel;
+                secondPlaceLabel = item.winnerLabel;
+                winnerData = item.winnerLabel;
+                secondPlaceData = item.secondPlaceData;
+                winnerAvatar = item.winnerAvatar;
+                secondPlaceAvatar = item.secondPlaceAvatar;
             }
         }
 

@@ -6,8 +6,17 @@ using UnityEngine.Video;
 
 public class StreamVideo : MonoBehaviour
 {
-    public RawImage rawImage;
     public VideoPlayer videoPlayer;
+
+    private void Awake()
+    {
+        StreamVideo[] sv = FindObjectsOfType<StreamVideo>();
+
+        if (sv.Length == 1)
+        {
+            DontDestroyOnLoad(this.gameObject);
+        }
+    }
 
     private void Start()
     {

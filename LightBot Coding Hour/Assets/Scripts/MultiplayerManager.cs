@@ -91,16 +91,45 @@ public class MultiplayerManager : MonoBehaviour
 
             List<PlayerProfile> allPlayers = new List<PlayerProfile>();
 
-            // Deleting the query of this user, so the server knows that this user doesn't want to play multiplayer anymore
-            foreach (var item in Mjb.Players)
+            switch (PlayerPrefs.GetString("diff"))
             {
-                if (item.Nickname != username)
-                {
-                    allPlayers.Add(item);
-                }
-            }
+                case "easy":
+                    // Deleting the query of this user, so the server knows that this user doesn't want to play multiplayer anymore
+                    foreach (var item in Mjb.Players)
+                    {
+                        if (item.Nickname != username)
+                        {
+                            allPlayers.Add(item);
+                        }
+                    }
 
-            Mjb.Players = allPlayers;
+                    Mjb.Players = allPlayers;
+                    break;
+                case "hard":
+                    // Deleting the query of this user, so the server knows that this user doesn't want to play multiplayer anymore
+                    foreach (var item in Mjb.PlayersHard)
+                    {
+                        if (item.Nickname != username)
+                        {
+                            allPlayers.Add(item);
+                        }
+                    }
+
+                    Mjb.PlayersHard = allPlayers;
+                    break;
+                default:
+                    // Deleting the query of this user, so the server knows that this user doesn't want to play multiplayer anymore
+                    foreach (var item in Mjb.Players)
+                    {
+                        if (item.Nickname != username)
+                        {
+                            allPlayers.Add(item);
+                        }
+                    }
+
+                    Mjb.Players = allPlayers;
+                    break;
+            }
 
             // Saving the signed JSON
             SaveToJson(Mjb, jsonPath);
@@ -125,39 +154,83 @@ public class MultiplayerManager : MonoBehaviour
         // Making active the matchamkiing meny, where the user can see for how long he is waiting and how many players there are at the queue
         matchmakingPanel.gameObject.SetActive(true);
 
-        // IF this is the first user to sign in for multiplayer, we are creating new user in the queue for multiplayer
-        if (mjb.Players.Count == 0)
+        switch (PlayerPrefs.GetString("diff"))
         {
-            mjb.Players.Add(new PlayerProfile());
-            mjb.Players[0].Nickname = username;
-            mjb.Players[0].avatar = (byte)PlayerPrefs.GetInt("avatar");
-        }
-        else // If not, we are checking if there is an empty record in the queue
-        {
-            // trigger to mark if an empty record was found in the queue
-            bool saved = false;
-
-            for (int i = 0; i < mjb.Players.Count; i++)
-            {
-                // if there is an empty record, we are filling it and signing this user at that record
-                if (mjb.Players[i].Nickname == null)
+            case "easy":
+                // IF this is the first user to sign in for multiplayer, we are creating new user in the queue for multiplayer
+                if (mjb.Players.Count == 0)
                 {
-                    mjb.Players[i].Nickname = username;
-                    mjb.Players[i].avatar = (byte)PlayerPrefs.GetInt("avatar");
-                    saved = true;
-                    break;
+                    mjb.Players.Add(new PlayerProfile());
+                    mjb.Players[0].Nickname = username;
+                    mjb.Players[0].avatar = (byte)PlayerPrefs.GetInt("avatar");
                 }
-            }
+                else // If not, we are checking if there is an empty record in the queue
+                {
+                    // trigger to mark if an empty record was found in the queue
+                    bool saved = false;
 
-            // If there wasn't an empty record to fill, we are creating a brand new one
-            if (!saved)
-            {
-                print("Player added");
-                mjb.Players.Add(new PlayerProfile());
-                mjb.Players[mjb.Players.Count - 1].Nickname = username;
-                mjb.Players[mjb.Players.Count - 1].avatar = (byte)PlayerPrefs.GetInt("avatar");
-            }
+                    for (int i = 0; i < mjb.Players.Count; i++)
+                    {
+                        // if there is an empty record, we are filling it and signing this user at that record
+                        if (mjb.Players[i].Nickname == null)
+                        {
+                            mjb.Players[i].Nickname = username;
+                            mjb.Players[i].avatar = (byte)PlayerPrefs.GetInt("avatar");
+                            saved = true;
+                            break;
+                        }
+                    }
+
+                    // If there wasn't an empty record to fill, we are creating a brand new one
+                    if (!saved)
+                    {
+                        print("Player added");
+                        mjb.Players.Add(new PlayerProfile());
+                        mjb.Players[mjb.Players.Count - 1].Nickname = username;
+                        mjb.Players[mjb.Players.Count - 1].avatar = (byte)PlayerPrefs.GetInt("avatar");
+                    }
+                }
+                break;
+            case "hard":
+                // IF this is the first user to sign in for multiplayer, we are creating new user in the queue for multiplayer
+                if (mjb.PlayersHard.Count == 0)
+                {
+                    mjb.PlayersHard.Add(new PlayerProfile());
+                    mjb.PlayersHard[0].Nickname = username;
+                    mjb.PlayersHard[0].avatar = (byte)PlayerPrefs.GetInt("avatar");
+                }
+                else // If not, we are checking if there is an empty record in the queue
+                {
+                    // trigger to mark if an empty record was found in the queue
+                    bool saved = false;
+
+                    for (int i = 0; i < mjb.PlayersHard.Count; i++)
+                    {
+                        // if there is an empty record, we are filling it and signing this user at that record
+                        if (mjb.PlayersHard[i].Nickname == null)
+                        {
+                            mjb.PlayersHard[i].Nickname = username;
+                            mjb.PlayersHard[i].avatar = (byte)PlayerPrefs.GetInt("avatar");
+                            saved = true;
+                            break;
+                        }
+                    }
+
+                    // If there wasn't an empty record to fill, we are creating a brand new one
+                    if (!saved)
+                    {
+                        print("Player added");
+                        mjb.PlayersHard.Add(new PlayerProfile());
+                        mjb.PlayersHard[mjb.PlayersHard.Count - 1].Nickname = username;
+                        mjb.PlayersHard[mjb.PlayersHard.Count - 1].avatar = (byte)PlayerPrefs.GetInt("avatar");
+                    }
+                }
+                break;
+            default:
+                break;
         }
+
+
 
         // Marks that the user is already signed for the multiplayer Queue
         signedIn = true;
@@ -233,7 +306,43 @@ public class MultiplayerManager : MonoBehaviour
                         SceneManager.LoadScene(battleScene);
                     }
                     break;
+                case "hard":
+                    // if there are enough players do that:
+                    if (mjb.PlayersHard.Count == 2 || TestMultiplayer)
+                    {
+                        // Instead of this make text says taht is has found enoguh players to play
+                        FoundGame.text = "Game found for " + DisplaySeconds(secs);
+                        StopCoroutine(SeekForOtherPlayers());
+                        StopCoroutine(Timer());
+                        signedIn = false;
 
+                        mjb.CurrentlyPlaying = true;
+                        SaveToJson(mjb, jsonPath);
+                        UploadInServer();
+
+                        switch (UnityEngine.Random.Range(2, 6))
+                        {
+                            case 2:
+                                battleScene = "Level P2";
+                                break;
+                            case 3:
+                                battleScene = "Level P3";
+                                break;
+                            case 5:
+                                battleScene = "Level P5";
+                                break;
+                            case 6:
+                                battleScene = "Level P6";
+                                break;
+
+                            default:
+                                battleScene = "Level P6";
+                                break;
+                        }
+
+                        SceneManager.LoadScene(battleScene);
+                    }
+                    break;
                 default:
                     if (mjb.Players.Count == 2 || TestMultiplayer)
                     {
@@ -320,31 +429,71 @@ public class MultiplayerManager : MonoBehaviour
         string winner = "";
         int max = -1;
 
-        foreach (var item in mjb.Players)
+        switch (PlayerPrefs.GetString("diff"))
         {
-            if (item.AmountOfBlueTilesEnlightened > max)
-            {
-                max = item.AmountOfBlueTilesEnlightened;
-                winner = item.Nickname;
-            }
+            case "easy":
+                foreach (var item in mjb.Players)
+                {
+                    if (item.AmountOfBlueTilesEnlightened > max)
+                    {
+                        max = item.AmountOfBlueTilesEnlightened;
+                        winner = item.Nickname;
+                    }
+                }
+                break;
+            case "hard":
+                foreach (var item in mjb.PlayersHard)
+                {
+                    if (item.AmountOfBlueTilesEnlightened > max)
+                    {
+                        max = item.AmountOfBlueTilesEnlightened;
+                        winner = item.Nickname;
+                    }
+                }
+                break;
+            default:
+                break;
         }
 
         PlayerProfile winnerProfile = new PlayerProfile();
         PlayerProfile secondPlaceProfile = new PlayerProfile();
 
-        foreach (var item in mjb.Players)
+        switch (PlayerPrefs.GetString("diff"))
         {
-            if (mjb.Players.Count == 2)
-            {
-                if (item.Nickname == winner)
+            case "easy":
+                foreach (var item in mjb.Players)
                 {
-                    winnerProfile = item;
+                    if (mjb.Players.Count == 2)
+                    {
+                        if (item.Nickname == winner)
+                        {
+                            winnerProfile = item;
+                        }
+                        else
+                        {
+                            secondPlaceProfile = item;
+                        }
+                    }
                 }
-                else
+                break;
+            case "hard":
+                foreach (var item in mjb.PlayersHard)
                 {
-                    secondPlaceProfile = item;
+                    if (mjb.Players.Count == 2)
+                    {
+                        if (item.Nickname == winner)
+                        {
+                            winnerProfile = item;
+                        }
+                        else
+                        {
+                            secondPlaceProfile = item;
+                        }
+                    }
                 }
-            }
+                break;
+            default:
+                break;
         }
 
         sm.winnerNameLabel.text = "Winner:/n" + winner;
@@ -363,7 +512,18 @@ public class MultiplayerManager : MonoBehaviour
         resultPanel.gameObject.SetActive(false);
         MJ mjb = ReadJson(jsonPath);
 
-        mjb.Players.Clear();
+        switch (PlayerPrefs.GetString("diff"))
+        {
+            case "easy":
+                mjb.Players.Clear();
+                break;
+            case "hard":
+                mjb.PlayersHard.Clear();
+                break;
+            default:
+                mjb.Players.Clear();
+                break;
+        }
 
         SaveToJson(mjb, jsonPath);
         UploadInServer();
@@ -415,7 +575,7 @@ public class MultiplayerManager : MonoBehaviour
                     break;
                 }
 
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(1.25f);
             }
 
             jsonUpdated = false;

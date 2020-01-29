@@ -42,12 +42,29 @@ public class SpriteManager : MonoBehaviour
 
     public Scrollbar musicVolume;
 
+    public Button easy;
+    public Button hard;
+
+
     private void Start()
     {
         // If it is in the main menu
         if (place1 != null && place3 != null && bgImage != null)
         {
 
+        }
+
+        if (SceneManager.GetActiveScene().name == "MultiplayerMenu")
+        {
+            switch (PlayerPrefs.GetString("diff"))
+            {
+                case "easy":
+                    SelectEasyDiff();
+                    break;
+                case "hard":
+                    SelectHardDiff();
+                    break;
+            }
         }
     }
 
@@ -190,5 +207,21 @@ public class SpriteManager : MonoBehaviour
         }
     }
 
+    public void SelectEasyDiff()
+    {
+        easy.GetComponent<Image>().color = Color.yellow;
 
+        PlayerPrefs.SetString("diff", "easy");
+
+        hard.GetComponent<Image>().color = Color.grey;
+    }
+
+    public void SelectHardDiff()
+    {
+        hard.GetComponent<Image>().color = Color.yellow;
+
+        PlayerPrefs.SetString("diff", "hard");
+
+        easy.GetComponent<Image>().color = Color.grey;
+    }
 }

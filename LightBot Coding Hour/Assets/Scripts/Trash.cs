@@ -7,6 +7,8 @@ public class Trash : MonoBehaviour
 
     private void Awake()
     {
+        PlayerPrefs.SetString("diff", "easy");
+
         Trash[] trashes = FindObjectsOfType<Trash>();
 
         if (trashes.Length == 1)

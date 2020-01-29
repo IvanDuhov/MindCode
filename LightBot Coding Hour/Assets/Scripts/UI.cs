@@ -22,6 +22,9 @@ public class UI : MonoBehaviour
     public Sprite onn;
     public Sprite off;
 
+    public Camera Main;
+    public Camera FPC;
+
 
     void Start()
     {
@@ -71,6 +74,7 @@ public class UI : MonoBehaviour
 
     void Update()
     {
+        ChangeCameras();
     }
 
     public void DevHelpPass()
@@ -176,6 +180,23 @@ public class UI : MonoBehaviour
         if (ch.Proc2Panel != null)
         {
             ch.Proc2Panel.color = ch.offColour;
+        }
+    }
+
+    public void ChangeCameras()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab) && Main != null)
+        {
+            if (Main.enabled)
+            {
+                Main.enabled = false;
+                FPC.enabled = true;
+            }
+            else
+            {
+                Main.enabled = true;
+                FPC.enabled = false;
+            }
         }
     }
 

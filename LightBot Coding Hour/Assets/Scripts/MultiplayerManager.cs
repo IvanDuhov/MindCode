@@ -479,7 +479,7 @@ public class MultiplayerManager : MonoBehaviour
             case "hard":
                 foreach (var item in mjb.PlayersHard)
                 {
-                    if (mjb.Players.Count == 2)
+                    if (mjb.PlayersHard.Count == 2)
                     {
                         if (item.Nickname == winner)
                         {

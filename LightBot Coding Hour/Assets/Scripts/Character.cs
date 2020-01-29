@@ -123,6 +123,11 @@ public class Character : MonoBehaviour
 
         if (mm != null)
         {
+            // Disabling the back button if the level is played in a multiplayer battle
+            GameObject backButton = GameObject.Find("Back");
+            backButton.SetActive(false);
+
+            // Setting up the battle timer
             GameObject mmTimer = GameObject.Find("MMTimer");
             mmTimer.GetComponent<Image>().enabled = true;
             mmTimer.GetComponentInChildren<Text>().enabled = true;

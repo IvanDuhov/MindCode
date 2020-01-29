@@ -32,18 +32,14 @@ public class MultiplayerManager : MonoBehaviour
     private int secs;
     private int mins;
 
+    private string battleScene = "Level 6";
+
     public int bSecs = 90;
 
     public Text TimeText;
     public Text FoundGame;
 
     public GameObject resultPanel;
-    public Text winnerLabel;
-    public Text secondPlaceLabel;
-    public Text winnerData;
-    public Text secondPlaceData;
-    public Image winnerAvatar;
-    public Image secondPlaceAvatar;
 
     public bool TestMultiplayer = false;
 
@@ -192,20 +188,68 @@ public class MultiplayerManager : MonoBehaviour
 
             MJ mjb = ReadJson(jsonPath);
 
-            // if there are enough players do that:
-            if (mjb.Players.Count == 2 || TestMultiplayer)
+            string gameMode = PlayerPrefs.GetString("diff");
+
+            switch (gameMode)
             {
-                // Instead of this make text says taht is has found enoguh players to play
-                FoundGame.text = "Game found for " + DisplaySeconds(secs);
-                StopCoroutine(SeekForOtherPlayers());
-                StopCoroutine(Timer());
-                signedIn = false;
+                case "easy":
+                    // if there are enough players do that:
+                    if (mjb.Players.Count == 2 || TestMultiplayer)
+                    {
+                        // Instead of this make text says taht is has found enoguh players to play
+                        FoundGame.text = "Game found for " + DisplaySeconds(secs);
+                        StopCoroutine(SeekForOtherPlayers());
+                        StopCoroutine(Timer());
+                        signedIn = false;
 
-                mjb.CurrentlyPlaying = true;
-                SaveToJson(mjb, jsonPath);
-                UploadInServer();
+                        mjb.CurrentlyPlaying = true;
+                        SaveToJson(mjb, jsonPath);
+                        UploadInServer();
 
-                SceneManager.LoadScene("Mtest");
+                        switch (UnityEngine.Random.Range(4, 8))
+                        {
+                            case 4:
+                                battleScene = "Level 4";
+                                break;
+                            case 5:
+                                battleScene = "Level 5";
+                                break;
+                            case 6:
+                                battleScene = "Level 6";
+                                break;
+                            case 7:
+                                battleScene = "Level 7";
+                                break;
+                            case 8:
+                                battleScene = "Level 8";
+                                break;
+
+                            default:
+                                battleScene = "Level 6";
+                                break;
+                        }
+
+
+                        SceneManager.LoadScene(battleScene);
+                    }
+                    break;
+
+                default:
+                    if (mjb.Players.Count == 2 || TestMultiplayer)
+                    {
+                        // Instead of this make text says taht is has found enoguh players to play
+                        FoundGame.text = "Game found for " + DisplaySeconds(secs);
+                        StopCoroutine(SeekForOtherPlayers());
+                        StopCoroutine(Timer());
+                        signedIn = false;
+
+                        mjb.CurrentlyPlaying = true;
+                        SaveToJson(mjb, jsonPath);
+                        UploadInServer();
+
+                        SceneManager.LoadScene("Level 4");
+                    }
+                    break;
             }
         }
     }
@@ -224,20 +268,16 @@ public class MultiplayerManager : MonoBehaviour
 
     public string DisplaySeconds(int secs)
     {
-        if (secs == 60)
-        {
-            mins++;
-            secs = 0;
-        }
-
         if (secs < 10)
         {
-            return mins + ":" + "0" + secs;
+            return "0:0" + secs;
         }
-        else
+        else if ((secs % 60) < 10)
         {
-            return mins + ":" + secs;
+            return (secs / 60) + ":0" + (secs % 60);
         }
+
+        return (secs / 60) + ":" + (secs % 60);
     }
 
     public IEnumerator BattleTimer(Text timerText)
@@ -268,27 +308,20 @@ public class MultiplayerManager : MonoBehaviour
             if (item.resultPanel != null)
             {
                 resultPanel = item.resultPanel;
-                winnerLabel = item.winnerLabel;
-                secondPlaceLabel = item.winnerLabel;
-                winnerData = item.winnerLabel;
-                secondPlaceData = item.secondPlaceData;
-                winnerAvatar = item.winnerAvatar;
-                secondPlaceAvatar = item.secondPlaceAvatar;
             }
         }
 
         resultPanel.SetActive(true);
 
+        SpriteManager sm = FindObjectOfType<SpriteManager>();
+
         MJ mjb = ReadJson(jsonPath);
 
         string winner = "";
         int max = -1;
-        winnerLabel.text = "All players:";
 
         foreach (var item in mjb.Players)
         {
-            winnerLabel.text += item.Nickname + "/n";
-
             if (item.AmountOfBlueTilesEnlightened > max)
             {
                 max = item.AmountOfBlueTilesEnlightened;
@@ -296,7 +329,31 @@ public class MultiplayerManager : MonoBehaviour
             }
         }
 
-        winnerLabel.text += "/n Winner:" + winner;
+        PlayerProfile winnerProfile = new PlayerProfile();
+        PlayerProfile secondPlaceProfile = new PlayerProfile();
+
+        foreach (var item in mjb.Players)
+        {
+            if (mjb.Players.Count == 2)
+            {
+                if (item.Nickname == winner)
+                {
+                    winnerProfile = item;
+                }
+                else
+                {
+                    secondPlaceProfile = item;
+                }
+            }
+        }
+
+        sm.winnerNameLabel.text = "Winner:/n" + winner;
+        sm.place1.sprite = sm.ReturnAvatar(winnerProfile);
+        sm.winnerData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", winnerProfile.AmountOfBlueTilesEnlightened, winnerProfile.AmountOfOrders, winnerProfile.timeInSeconds);
+
+        sm.secondPlaceNameLabel.text = "Second place:\n" + secondPlaceProfile.Nickname;
+        sm.place2.sprite = sm.ReturnAvatar(secondPlaceProfile);
+        sm.secondPlaceData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", secondPlaceProfile.AmountOfBlueTilesEnlightened, secondPlaceProfile.AmountOfOrders, secondPlaceProfile.timeInSeconds);
 
         showWinner = false;
     }

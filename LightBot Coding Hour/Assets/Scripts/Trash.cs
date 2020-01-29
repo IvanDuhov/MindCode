@@ -1,15 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Trash : MonoBehaviour 
+public class Trash : MonoBehaviour
 {
-	AudioSource ass;
+    AudioSource ass;
 
+    private void Awake()
+    {
+        Trash[] trashes = FindObjectsOfType<Trash>();
 
-	void Start () 
-	{
-		ass = FindObjectOfType<AudioSource> ();
-		ass.Play ();
-	}
+        if (trashes.Length == 1)
+        {
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
+        ass = FindObjectOfType<AudioSource>();
+        ass.volume = PlayerPrefs.GetFloat("volume");
+        ass.Play();
+
+    }
 
 }

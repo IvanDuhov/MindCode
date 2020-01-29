@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Trash.unity
+- path: Assets/Scenes/SelectionMenu.unity
   isLoaded: 1
   isActive: 1

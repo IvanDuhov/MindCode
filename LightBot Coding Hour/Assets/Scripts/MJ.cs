@@ -8,4 +8,6 @@ public class MJ
     public bool CurrentlyPlaying;
 
     public List<PlayerProfile> Players;
+    public List<PlayerProfile> PlayersHard;
+    public List<PlayerProfile> PlayerTournament;
 }

@@ -8,4 +8,5 @@ public class PlayerProfile
     public byte avatar;
     public int AmountOfOrders;
     public int AmountOfBlueTilesEnlightened;
+    public int timeInSeconds;
 }

@@ -123,8 +123,12 @@ public class Character : MonoBehaviour
 
         if (mm != null)
         {
-            BTimerText = GameObject.Find("MTimer").GetComponent<Text>();
-            BTimerText.gameObject.SetActive(true);
+            GameObject mmTimer = GameObject.Find("MMTimer");
+            mmTimer.GetComponent<Image>().enabled = true;
+            mmTimer.GetComponentInChildren<Text>().enabled = true;
+
+            BTimerText = mmTimer.GetComponentInChildren<Text>();
+
             StartCoroutine(mm.BattleTimer(BTimerText));
         }
     }
@@ -1476,14 +1480,44 @@ public class Character : MonoBehaviour
 
             MJ mj = MultiplayerManager.ReadJson(mm.jsonPath);
 
-            foreach (var item in mj.Players)
+            switch (PlayerPrefs.GetString("diff"))
             {
-                if (item.Nickname == mm.username)
-                {
-                    item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
-                    item.AmountOfBlueTilesEnlightened = count;
+                case "easy":
+                    foreach (var item in mj.Players)
+                    {
+                        if (item.Nickname == mm.username)
+                        {
+                            item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
+                            item.AmountOfBlueTilesEnlightened = count;
+                            item.timeInSeconds = 90 - mm.bSecs;
+                            break;
+                        }
+                    }
                     break;
-                }
+                case "hard":
+                    foreach (var item in mj.PlayersHard)
+                    {
+                        if (item.Nickname == mm.username)
+                        {
+                            item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
+                            item.AmountOfBlueTilesEnlightened = count;
+                            item.timeInSeconds = 90 - mm.bSecs;
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    foreach (var item in mj.Players)
+                    {
+                        if (item.Nickname == mm.username)
+                        {
+                            item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
+                            item.AmountOfBlueTilesEnlightened = count;
+                            item.timeInSeconds = 90 - mm.bSecs;
+                            break;
+                        }
+                    }
+                    break;
             }
 
             MultiplayerManager.SaveToJson(mj, mm.jsonPath);
@@ -1491,6 +1525,7 @@ public class Character : MonoBehaviour
 
             mm.jsonUpdated = false;
             mm.uploadinJSON = false;
+
         } // if we are playing multiplayer only!
 
     }

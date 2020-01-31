@@ -62,6 +62,9 @@ public class SpriteManager : MonoBehaviour
     public Button easy;
     public Button hard;
 
+    public Sprite diffPanel;
+    public Sprite diffPanelSelected;
+
 
     private void Start()
     {
@@ -271,19 +274,19 @@ public class SpriteManager : MonoBehaviour
 
     public void SelectEasyDiff()
     {
-        easy.GetComponent<Image>().color = Color.yellow;
+        easy.GetComponent<Image>().sprite = diffPanelSelected;
 
         PlayerPrefs.SetString("diff", "easy");
 
-        hard.GetComponent<Image>().color = Color.grey;
+        hard.GetComponent<Image>().sprite = diffPanel;
     }
 
     public void SelectHardDiff()
     {
-        hard.GetComponent<Image>().color = Color.yellow;
+        hard.GetComponent<Image>().sprite = diffPanelSelected;
 
         PlayerPrefs.SetString("diff", "hard");
 
-        easy.GetComponent<Image>().color = Color.grey;
+        easy.GetComponent<Image>().sprite = diffPanel;
     }
 }

@@ -30,7 +30,6 @@ public class MultiplayerManager : MonoBehaviour
     public Transform matchmakingPanel;
 
     private int secs;
-    private int mins;
 
     private string battleScene = "Level 6";
 
@@ -38,6 +37,13 @@ public class MultiplayerManager : MonoBehaviour
 
     public Text TimeText;
     public Text FoundGame;
+    public Text resultsLabel;
+    public Text resultsOk;
+
+    public Text playLabel;
+    public Text easyLabel;
+    public Text hardLabel;
+    public Text cancelLabel;
 
     public GameObject resultPanel;
 
@@ -75,6 +81,24 @@ public class MultiplayerManager : MonoBehaviour
                 }
             }
         }
+
+        if (PlayerPrefs.GetString("English") == "true")
+        {
+            playLabel.text = "Play";
+            easyLabel.text = "Easy";
+            hardLabel.text = "Hard";
+            cancelLabel.text = "Cancel";
+        }
+        else
+        {
+            playLabel.text = "Играй";
+            easyLabel.text = "Лесно";
+            hardLabel.text = "Трудно";
+            cancelLabel.text = "Спри";
+        }
+
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 300;
     }
 
     // Procedure to sign the user that he wished to play multiplayer
@@ -86,6 +110,8 @@ public class MultiplayerManager : MonoBehaviour
         if (signedIn)
         {
             signedIn = false;
+
+            secs = 0;
 
             MJ Mjb = ReadJson(jsonPath);
 
@@ -374,7 +400,14 @@ public class MultiplayerManager : MonoBehaviour
 
             secs++;
 
-            TimeText.text = DisplaySeconds(secs);
+            if (PlayerPrefs.GetString("English") == "true")
+            {
+                TimeText.text = "Time searching: " + DisplaySeconds(secs);
+            }
+            else
+            {
+                TimeText.text = "Изминало време в търсене: " + DisplaySeconds(secs);
+            }
         }
     }
 
@@ -499,13 +532,32 @@ public class MultiplayerManager : MonoBehaviour
                 break;
         }
 
-        sm.winnerNameLabel.text = "Winner:/n" + winner;
-        sm.place1.sprite = sm.ReturnAvatar(winnerProfile);
-        sm.winnerData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", winnerProfile.AmountOfBlueTilesEnlightened, winnerProfile.AmountOfOrders, winnerProfile.timeInSeconds);
+        if (PlayerPrefs.GetString("English") == "true")
+        {
+            resultsLabel.text = "Results";
+            resultsOk.text = "Ok";
 
-        sm.secondPlaceNameLabel.text = "Second place:\n" + secondPlaceProfile.Nickname;
+            sm.winnerNameLabel.text = "Winner:\n" + winner;
+            sm.winnerData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", winnerProfile.AmountOfBlueTilesEnlightened, winnerProfile.AmountOfOrders, winnerProfile.timeInSeconds);
+
+            sm.secondPlaceNameLabel.text = "Second place:\n" + secondPlaceProfile.Nickname;
+            sm.secondPlaceData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", secondPlaceProfile.AmountOfBlueTilesEnlightened, secondPlaceProfile.AmountOfOrders, secondPlaceProfile.timeInSeconds);
+        }
+        else
+        {
+            resultsLabel.text = "Резултати";
+            resultsOk.text = "Окей";
+
+            sm.winnerNameLabel.text = "Победител:\n" + winner;
+            sm.winnerData.text = string.Format("Осветени полета: {0}\nБрой използвани команди: {1}\nНужно време за решаване: {2} секунди", winnerProfile.AmountOfBlueTilesEnlightened, winnerProfile.AmountOfOrders, winnerProfile.timeInSeconds);
+
+            sm.secondPlaceNameLabel.text = "Губещ:\n" + secondPlaceProfile.Nickname;
+            sm.secondPlaceData.text = string.Format("Осветени полета: {0}\nБрой използвани команди: {1}\nНужно време за решаване: {2} секунди", secondPlaceProfile.AmountOfBlueTilesEnlightened, secondPlaceProfile.AmountOfOrders, secondPlaceProfile.timeInSeconds);
+
+        }
+
+        sm.place1.sprite = sm.ReturnAvatar(winnerProfile);
         sm.place2.sprite = sm.ReturnAvatar(secondPlaceProfile);
-        sm.secondPlaceData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", secondPlaceProfile.AmountOfBlueTilesEnlightened, secondPlaceProfile.AmountOfOrders, secondPlaceProfile.timeInSeconds);
 
         showWinner = false;
     }

@@ -122,6 +122,8 @@ public class Character : MonoBehaviour
     private int bestTime = 90;
     private int maxBlueTiles = 0;
 
+    private bool multiplayer = false;
+
 
     private void Awake() // for multiplayer purposes, but later can be moved to the Start function
     {
@@ -129,6 +131,8 @@ public class Character : MonoBehaviour
 
         if (mm != null)
         {
+            multiplayer = true;
+
             // Disabling the back button if the level is played in a multiplayer battle
             GameObject backButton = GameObject.Find("Back");
             backButton.SetActive(false);
@@ -167,10 +171,13 @@ public class Character : MonoBehaviour
             forwardbg.sprite = bgSprite;
         }
 
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 300;
+
         protector.gameObject.SetActive(false);
     }
 
-    void Update()
+    void LateUpdate()
     {
         // Animation "magic"
         if (walking)
@@ -180,7 +187,6 @@ public class Character : MonoBehaviour
         ColorChangerMain();
         ColorChangerProc1();
         ColorChangerProc2();
-
     }
 
     #region Tile Functions
@@ -1472,6 +1478,7 @@ public class Character : MonoBehaviour
             {
                 background.gameObject.SetActive(true);
                 stars.sprite = zerostar;
+
                 forwardBTN.enabled = false;
                 forwardBTN.image.sprite = forwardOff;
 
@@ -1590,7 +1597,7 @@ public class Character : MonoBehaviour
         MultiplayerManager mm = FindObjectOfType<MultiplayerManager>();
         MJ mj = MultiplayerManager.ReadJson(mm.jsonPath);
 
-        while (true)
+        for (int i = 0; i < 30; i++)
         {
             if (!mm.uploadinJSON)
             {

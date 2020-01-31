@@ -104,6 +104,7 @@ public class MultiplayerManager : MonoBehaviour
                     }
 
                     Mjb.Players = allPlayers;
+
                     break;
                 case "hard":
                     // Deleting the query of this user, so the server knows that this user doesn't want to play multiplayer anymore
@@ -163,6 +164,11 @@ public class MultiplayerManager : MonoBehaviour
                     mjb.Players.Add(new PlayerProfile());
                     mjb.Players[0].Nickname = username;
                     mjb.Players[0].avatar = (byte)PlayerPrefs.GetInt("avatar");
+
+                    if (mjb.EasyLevel == "" || mjb.EasyLevel == null)
+                    {
+                        mjb.EasyLevel = SelectRandomEasyLevel();
+                    }
                 }
                 else // If not, we are checking if there is an empty record in the queue
                 {
@@ -198,6 +204,11 @@ public class MultiplayerManager : MonoBehaviour
                     mjb.PlayersHard.Add(new PlayerProfile());
                     mjb.PlayersHard[0].Nickname = username;
                     mjb.PlayersHard[0].avatar = (byte)PlayerPrefs.GetInt("avatar");
+
+                    if (mjb.HardLevel == "" || mjb.HardLevel == null)
+                    {
+                        mjb.HardLevel = SelectRandomHardLevel();
+                    }
                 }
                 else // If not, we are checking if there is an empty record in the queue
                 {
@@ -229,8 +240,6 @@ public class MultiplayerManager : MonoBehaviour
             default:
                 break;
         }
-
-
 
         // Marks that the user is already signed for the multiplayer Queue
         signedIn = true;
@@ -279,31 +288,7 @@ public class MultiplayerManager : MonoBehaviour
                         SaveToJson(mjb, jsonPath);
                         UploadInServer();
 
-                        switch (UnityEngine.Random.Range(4, 8))
-                        {
-                            case 4:
-                                battleScene = "Level 4";
-                                break;
-                            case 5:
-                                battleScene = "Level 5";
-                                break;
-                            case 6:
-                                battleScene = "Level 6";
-                                break;
-                            case 7:
-                                battleScene = "Level 7";
-                                break;
-                            case 8:
-                                battleScene = "Level 8";
-                                break;
-
-                            default:
-                                battleScene = "Level 6";
-                                break;
-                        }
-
-
-                        SceneManager.LoadScene(battleScene);
+                        SceneManager.LoadScene(mjb.EasyLevel);
                     }
                     break;
                 case "hard":
@@ -320,27 +305,7 @@ public class MultiplayerManager : MonoBehaviour
                         SaveToJson(mjb, jsonPath);
                         UploadInServer();
 
-                        switch (UnityEngine.Random.Range(2, 6))
-                        {
-                            case 2:
-                                battleScene = "Level P2";
-                                break;
-                            case 3:
-                                battleScene = "Level P3";
-                                break;
-                            case 5:
-                                battleScene = "Level P5";
-                                break;
-                            case 6:
-                                battleScene = "Level P6";
-                                break;
-
-                            default:
-                                battleScene = "Level P6";
-                                break;
-                        }
-
-                        SceneManager.LoadScene(battleScene);
+                        SceneManager.LoadScene(mjb.HardLevel);
                     }
                     break;
                 default:
@@ -360,6 +325,44 @@ public class MultiplayerManager : MonoBehaviour
                     }
                     break;
             }
+        }
+    }
+
+    private string SelectRandomEasyLevel()
+    {
+        switch (UnityEngine.Random.Range(4, 8))
+        {
+            case 4:
+                return "Level 4";
+            case 5:
+                return "Level 5";
+            case 6:
+                return "Level 6";
+            case 7:
+                return "Level 7";
+            case 8:
+                return "Level 8";
+
+            default:
+                return "Level 6";
+        }
+    }
+
+    private string SelectRandomHardLevel()
+    {
+        switch (UnityEngine.Random.Range(2, 6))
+        {
+            case 2:
+                return "Level P2";
+            case 3:
+                return "Level P3";
+            case 5:
+                return "Level P5";
+            case 6:
+                return "Level P6";
+
+            default:
+                return "Level P6";
         }
     }
 
@@ -516,9 +519,11 @@ public class MultiplayerManager : MonoBehaviour
         {
             case "easy":
                 mjb.Players.Clear();
+                mjb.EasyLevel = "";
                 break;
             case "hard":
                 mjb.PlayersHard.Clear();
+                mjb.HardLevel = "";
                 break;
             default:
                 mjb.Players.Clear();
@@ -615,5 +620,22 @@ public class MultiplayerManager : MonoBehaviour
     public void UploadInServer()
     {
         ftpClient.upload(@"Test.json", jsonPath);
+    }
+
+    public void ClearDataInTheServer()
+    {
+        uploadinJSON = true;
+
+        MJ mjb = ReadJson(jsonPath);
+        mjb.Players.Clear();
+        mjb.PlayersHard.Clear();
+        mjb.EasyLevel = "";
+        mjb.HardLevel = "";
+
+        SaveToJson(mjb, jsonPath);
+
+        UploadInServer();
+
+        uploadinJSON = false;
     }
 }

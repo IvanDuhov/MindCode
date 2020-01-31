@@ -117,6 +117,10 @@ public class Character : MonoBehaviour
 
     private string lang;
 
+    private int bestOrdersAmount = 100;
+    private int bestTime = 90;
+    private int maxBlueTiles = 0;
+
     private void Awake() // for multiplayer purposes, but later can be moved to the Start function
     {
         MultiplayerManager mm = FindObjectOfType<MultiplayerManager>();
@@ -1474,14 +1478,16 @@ public class Character : MonoBehaviour
         }  // The coroutine for execution of the commands
         suspend = false;
 
-        // Multiplayer: updating the FTP client db after executing all give orders
-
+        // Multiplayer: updating the FTP client db after executing all given orders
+        //////////////////////////////////////////////////////////////////////////
         MultiplayerManager mm = FindObjectOfType<MultiplayerManager>();
 
         if (mm != null)
         {
             mm.uploadinJSON = true;
             mm.jsonUpdated = true;
+
+            bool betterResults = false;
 
             MJ mj = MultiplayerManager.ReadJson(mm.jsonPath);
 
@@ -1492,6 +1498,11 @@ public class Character : MonoBehaviour
                     {
                         if (item.Nickname == mm.username)
                         {
+                            if (count > maxBlueTiles)
+                            {
+                                betterResults = true;
+                            }
+
                             item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
                             item.AmountOfBlueTilesEnlightened = count;
                             item.timeInSeconds = 90 - mm.bSecs;

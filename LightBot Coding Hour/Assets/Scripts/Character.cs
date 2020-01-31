@@ -1502,11 +1502,22 @@ public class Character : MonoBehaviour
                             {
                                 betterResults = true;
                             }
+                            else if (count == maxBlueTiles && numOfOrders < bestOrdersAmount)
+                            {
+                                betterResults = true;
+                            }
 
-                            item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
-                            item.AmountOfBlueTilesEnlightened = count;
-                            item.timeInSeconds = 90 - mm.bSecs;
-                            break;
+                            if (betterResults)
+                            {
+                                item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
+                                item.AmountOfBlueTilesEnlightened = count;
+                                item.timeInSeconds = 90 - mm.bSecs;
+
+                                maxBlueTiles = count;
+                                bestOrdersAmount = numOfOrders;
+
+                                break;
+                            }
                         }
                     }
                     break;
@@ -1515,10 +1526,25 @@ public class Character : MonoBehaviour
                     {
                         if (item.Nickname == mm.username)
                         {
-                            item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
-                            item.AmountOfBlueTilesEnlightened = count;
-                            item.timeInSeconds = 90 - mm.bSecs;
-                            break;
+                            if (count > maxBlueTiles)
+                            {
+                                betterResults = true;
+                            }
+                            else if (count == maxBlueTiles && ((numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders) < bestOrdersAmount))
+                            {
+                                betterResults = true;
+                            }
+
+                            if (betterResults)
+                            {
+                                item.AmountOfOrders = numOfOrders + numOfProcedure1Orders + numOfProcedure2Orders;
+                                item.AmountOfBlueTilesEnlightened = count;
+                                item.timeInSeconds = 90 - mm.bSecs;
+
+                                maxBlueTiles = count;
+                                bestOrdersAmount = item.AmountOfOrders;
+                                break;
+                            }
                         }
                     }
                     break;
@@ -1537,7 +1563,12 @@ public class Character : MonoBehaviour
             }
 
             MultiplayerManager.SaveToJson(mj, mm.jsonPath);
-            mm.UploadInServer();
+
+            if (betterResults)
+            {
+                mm.UploadInServer();
+                betterResults = false;
+            }
 
             mm.jsonUpdated = false;
             mm.uploadinJSON = false;

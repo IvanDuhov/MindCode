@@ -122,6 +122,7 @@ public class Character : MonoBehaviour
     private int bestTime = 90;
     private int maxBlueTiles = 0;
 
+
     private void Awake() // for multiplayer purposes, but later can be moved to the Start function
     {
         MultiplayerManager mm = FindObjectOfType<MultiplayerManager>();
@@ -179,6 +180,7 @@ public class Character : MonoBehaviour
         ColorChangerMain();
         ColorChangerProc1();
         ColorChangerProc2();
+
     }
 
     #region Tile Functions

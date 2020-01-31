@@ -25,7 +25,6 @@ public class UI : MonoBehaviour
     public Camera Main;
     public Camera FPC;
 
-
     void Start()
     {
         string fix = PlayerPrefs.GetString("English");

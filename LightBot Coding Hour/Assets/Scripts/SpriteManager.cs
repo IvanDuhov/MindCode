@@ -37,6 +37,23 @@ public class SpriteManager : MonoBehaviour
     public Sprite bulgarian;
     public Sprite bulgarianSelected;
 
+    public Text singleplayerText;
+    public Text multiplayerText;
+    public Text profileText;
+    public Text optionsText;
+    public Text exitText;
+
+    public Text profileSettings;
+    public Text profileAvatar;
+    public Text profileEnterUsername;
+    public Text profileUsernamePlaceholer;
+    public Text profileSave;
+
+    public Text options;
+    public Text optionsLanguage;
+    public Text optionsVolume;
+    public Text optionsSave;
+
     public Sprite english;
     public Sprite englishSelected;
 
@@ -48,10 +65,9 @@ public class SpriteManager : MonoBehaviour
 
     private void Start()
     {
-        // If it is in the main menu
-        if (place1 != null && place3 != null && bgImage != null)
+        if (SceneManager.GetActiveScene().name == "Menu")
         {
-
+            Translate();
         }
 
         if (SceneManager.GetActiveScene().name == "MultiplayerMenu")
@@ -148,6 +164,8 @@ public class SpriteManager : MonoBehaviour
     {
         PlayerPrefs.SetString("English", "true");
 
+        Translate();
+
         bgImage.sprite = bulgarian;
         engImage.sprite = englishSelected;
     }
@@ -156,8 +174,52 @@ public class SpriteManager : MonoBehaviour
     {
         PlayerPrefs.SetString("English", "false");
 
+        Translate();
+
         bgImage.sprite = bulgarianSelected;
         engImage.sprite = english;
+    }
+
+    public void Translate()
+    {
+        if (PlayerPrefs.GetString("English") == "true")
+        {
+            singleplayerText.text = "Singleplayer";
+            multiplayerText.text = "Multiplayer";
+            profileText.text = "Profile";
+            optionsText.text = "Options";
+            exitText.text = "Exit";
+
+            profileSettings.text = "Profile settings";
+            profileAvatar.text = "Select avatar";
+            profileEnterUsername.text = "Enter your username";
+            profileUsernamePlaceholer.text = "Username ...";
+            profileSave.text = "Save";
+
+            options.text = "Options";
+            optionsLanguage.text = "Select language";
+            optionsVolume.text = "Control your music volume";
+            optionsSave.text = "Save";
+        }
+        else
+        {
+            singleplayerText.text = "Самостоятелна игра";
+            multiplayerText.text = "Групова игра";
+            profileText.text = "Профил";
+            optionsText.text = "Настройки";
+            exitText.text = "Изход";
+
+            profileSettings.text = "Настройки на профила";
+            profileAvatar.text = "Избери си аватар";
+            profileEnterUsername.text = "Въведи потребителско име";
+            profileUsernamePlaceholer.text = "Потребителско име ...";
+            profileSave.text = "Запази";
+
+            options.text = "Настройки";
+            optionsLanguage.text = "Избери си език";
+            optionsVolume.text = "Контролирай силата на звука";
+            optionsSave.text = "Запази";
+        }
     }
 
     public void OpenOptions()

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System;
 
 public class Character : MonoBehaviour
@@ -139,6 +140,8 @@ public class Character : MonoBehaviour
             BTimerText = mmTimer.GetComponentInChildren<Text>();
 
             StartCoroutine(mm.BattleTimer(BTimerText));
+
+            StartCoroutine(SyncLocalDataWithServer());
         }
     }
 
@@ -1515,6 +1518,7 @@ public class Character : MonoBehaviour
 
                                 maxBlueTiles = count;
                                 bestOrdersAmount = numOfOrders;
+                                bestTime = item.timeInSeconds;
 
                                 break;
                             }
@@ -1543,6 +1547,8 @@ public class Character : MonoBehaviour
 
                                 maxBlueTiles = count;
                                 bestOrdersAmount = item.AmountOfOrders;
+                                bestTime = item.timeInSeconds;
+
                                 break;
                             }
                         }
@@ -1562,10 +1568,10 @@ public class Character : MonoBehaviour
                     break;
             }
 
-            MultiplayerManager.SaveToJson(mj, mm.jsonPath);
 
             if (betterResults)
             {
+                MultiplayerManager.SaveToJson(mj, mm.jsonPath);
                 mm.UploadInServer();
                 betterResults = false;
             }
@@ -1576,6 +1582,61 @@ public class Character : MonoBehaviour
         } // if we are playing multiplayer only!
 
     }
+
+    private IEnumerator SyncLocalDataWithServer()
+    {
+        MultiplayerManager mm = FindObjectOfType<MultiplayerManager>();
+        MJ mj = MultiplayerManager.ReadJson(mm.jsonPath);
+
+        while (true)
+        {
+            if (!mm.uploadinJSON)
+            {
+                switch (PlayerPrefs.GetString("diff"))
+                {
+                    case "easy":
+                        foreach (var item in mj.Players)
+                        {
+                            if (item.Nickname == mm.username)
+                            {
+                                if (item.AmountOfOrders != bestOrdersAmount || item.AmountOfBlueTilesEnlightened != maxBlueTiles || bestTime != item.timeInSeconds)
+                                {
+                                    mm.UploadInServer();
+                                    print(string.Format("Server orders:{0} vs {1} local, server blue tiles:{2} vs {3} local, server time: {4} vs {5} local", item.AmountOfOrders, bestOrdersAmount, item.AmountOfBlueTilesEnlightened, maxBlueTiles, item.timeInSeconds, bestTime));
+                                    print("There was misdata in the server but it was reuploaded, so no worries!");
+                                }
+
+                                print("data is correct and synced in the server");
+
+                                break;
+                            }
+                        }
+                        break;
+                    case "hard":
+                        foreach (var item in mj.PlayersHard)
+                        {
+                            if (item.Nickname == mm.username)
+                            {
+                                if (item.AmountOfOrders != bestOrdersAmount || item.AmountOfBlueTilesEnlightened != maxBlueTiles || bestTime != item.timeInSeconds)
+                                {
+                                    mm.UploadInServer();
+                                    print("There was misdata in the server but it was reuploaded, so no worries!");
+                                }
+
+                                print("data is correct and synced in the server");
+
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            yield return new WaitForSeconds(5f);
+
+            mj = MultiplayerManager.ReadJson(mm.jsonPath);
+        }
+    } // Syncing the local data with the server every 5 secs if there is misdata in the json
 
     // Changes the colour of the pannels for the commands!
     void ColorChangerMain()

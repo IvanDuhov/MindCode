@@ -144,6 +144,9 @@ public class Character : MonoBehaviour
 
             BTimerText = mmTimer.GetComponentInChildren<Text>();
 
+            forwardBTN.gameObject.SetActive(false);
+
+
             StartCoroutine(mm.BattleTimer(BTimerText));
 
             StartCoroutine(SyncLocalDataWithServer());
@@ -177,7 +180,7 @@ public class Character : MonoBehaviour
         protector.gameObject.SetActive(false);
     }
 
-    void LateUpdate()
+    void Update()
     {
         // Animation "magic"
         if (walking)
@@ -1478,6 +1481,11 @@ public class Character : MonoBehaviour
             {
                 background.gameObject.SetActive(true);
                 stars.sprite = zerostar;
+
+                if (multiplayer)
+                {
+                    GameObject.Find("Restart").GetComponent<Transform>().localPosition = new Vector3(10, -85, 0);
+                }
 
                 forwardBTN.enabled = false;
                 forwardBTN.image.sprite = forwardOff;

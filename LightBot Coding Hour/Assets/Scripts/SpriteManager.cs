@@ -71,6 +71,11 @@ public class SpriteManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             Translate();
+
+            if (PlayerPrefs.GetString("nickname") == null || PlayerPrefs.GetString("nickname") == "")
+            {
+                PlayerPrefs.SetString("nickname", "default-" + UnityEngine.Random.Range(1, 1000000));
+            }
         }
 
         if (SceneManager.GetActiveScene().name == "MultiplayerMenu")

@@ -511,6 +511,23 @@ public class MultiplayerManager : MonoBehaviour
                         }
                     }
                 }
+                if (winnerProfile.AmountOfBlueTilesEnlightened == secondPlaceProfile.AmountOfBlueTilesEnlightened)
+                {
+                    if (winnerProfile.AmountOfOrders > secondPlaceProfile.AmountOfOrders)
+                    {
+                        PlayerProfile temp = new PlayerProfile();
+                        temp = winnerProfile;
+                        winnerProfile = secondPlaceProfile;
+                        secondPlaceProfile = temp;
+                    }
+                    else if (winnerProfile.timeInSeconds > secondPlaceProfile.timeInSeconds)
+                    {
+                        PlayerProfile temp = new PlayerProfile();
+                        temp = winnerProfile;
+                        winnerProfile = secondPlaceProfile;
+                        secondPlaceProfile = temp;
+                    }
+                }
                 break;
             case "hard":
                 foreach (var item in mjb.PlayersHard)
@@ -525,6 +542,23 @@ public class MultiplayerManager : MonoBehaviour
                         {
                             secondPlaceProfile = item;
                         }
+                    }
+                }
+                if (winnerProfile.AmountOfBlueTilesEnlightened == secondPlaceProfile.AmountOfBlueTilesEnlightened)
+                {
+                    if (winnerProfile.AmountOfOrders > secondPlaceProfile.AmountOfOrders)
+                    {
+                        PlayerProfile temp = new PlayerProfile();
+                        temp = winnerProfile;
+                        winnerProfile = secondPlaceProfile;
+                        secondPlaceProfile = temp;
+                    }
+                    else if (winnerProfile.timeInSeconds > secondPlaceProfile.timeInSeconds)
+                    {
+                        PlayerProfile temp = new PlayerProfile();
+                        temp = winnerProfile;
+                        winnerProfile = secondPlaceProfile;
+                        secondPlaceProfile = temp;
                     }
                 }
                 break;
@@ -632,7 +666,7 @@ public class MultiplayerManager : MonoBehaviour
                     break;
                 }
 
-                yield return new WaitForSeconds(1.25f);
+                yield return new WaitForSeconds(1.75f);
             }
 
             jsonUpdated = false;

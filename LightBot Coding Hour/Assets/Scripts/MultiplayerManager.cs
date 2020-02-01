@@ -49,6 +49,8 @@ public class MultiplayerManager : MonoBehaviour
 
     public bool TestMultiplayer = false;
 
+    private PlayerProfile myProfile;
+
     private void Awake()
     {
         jsonPath = Path.Combine(Application.streamingAssetsPath, filename);
@@ -463,27 +465,43 @@ public class MultiplayerManager : MonoBehaviour
         MJ mjb = ReadJson(jsonPath);
 
         string winner = "";
-        int max = -1;
+        int max = 0;
 
         switch (PlayerPrefs.GetString("diff"))
         {
             case "easy":
                 foreach (var item in mjb.Players)
                 {
-                    if (item.AmountOfBlueTilesEnlightened > max)
+                    if (item.AmountOfBlueTilesEnlightened >= max)
                     {
                         max = item.AmountOfBlueTilesEnlightened;
                         winner = item.Nickname;
+                    }
+                }
+                foreach (var item in mjb.Players)
+                {
+                    if (item.Nickname == username)
+                    {
+                        item.showed = true;
+                        break;
                     }
                 }
                 break;
             case "hard":
                 foreach (var item in mjb.PlayersHard)
                 {
-                    if (item.AmountOfBlueTilesEnlightened > max)
+                    if (item.AmountOfBlueTilesEnlightened >= max)
                     {
                         max = item.AmountOfBlueTilesEnlightened;
                         winner = item.Nickname;
+                    }
+                }
+                foreach (var item in mjb.PlayersHard)
+                {
+                    if (item.Nickname == username)
+                    {
+                        item.showed = true;
+                        break;
                     }
                 }
                 break;
@@ -491,78 +509,160 @@ public class MultiplayerManager : MonoBehaviour
                 break;
         }
 
+        SaveToJson(mjb, jsonPath);
+        UploadInServer();
+
         PlayerProfile winnerProfile = new PlayerProfile();
         PlayerProfile secondPlaceProfile = new PlayerProfile();
 
         switch (PlayerPrefs.GetString("diff"))
         {
             case "easy":
-                foreach (var item in mjb.Players)
+                if (mjb.Players.Count == 2)
                 {
-                    if (mjb.Players.Count == 2)
+                    if (mjb.Players[0].Nickname == winner)
                     {
-                        if (item.Nickname == winner)
+                        if (mjb.Players[0].AmountOfBlueTilesEnlightened == mjb.Players[1].AmountOfBlueTilesEnlightened)
                         {
-                            winnerProfile = item;
+                            if (mjb.Players[0].AmountOfOrders > mjb.Players[1].AmountOfOrders)
+                            {
+                                winnerProfile = mjb.Players[1];
+                                secondPlaceProfile = mjb.Players[0];
+                            }
+                            else if (mjb.Players[0].AmountOfOrders == mjb.Players[1].AmountOfOrders)
+                            {
+                                if (mjb.Players[0].timeInSeconds > mjb.Players[1].timeInSeconds)
+                                {
+                                    winnerProfile = mjb.Players[1];
+                                    secondPlaceProfile = mjb.Players[0];
+                                }
+                                else
+                                {
+                                    winnerProfile = mjb.Players[0];
+                                    secondPlaceProfile = mjb.Players[1];
+                                }
+                            }
+                            else
+                            {
+                                winnerProfile = mjb.Players[0];
+                                secondPlaceProfile = mjb.Players[1];
+                            }
                         }
                         else
                         {
-                            secondPlaceProfile = item;
+                            winnerProfile = mjb.Players[0];
+                            secondPlaceProfile = mjb.Players[1];
                         }
                     }
-                }
-                if (winnerProfile.AmountOfBlueTilesEnlightened == secondPlaceProfile.AmountOfBlueTilesEnlightened)
-                {
-                    if (winnerProfile.AmountOfOrders > secondPlaceProfile.AmountOfOrders)
+                    else if (mjb.Players[1].Nickname == winner)
                     {
-                        PlayerProfile temp = new PlayerProfile();
-                        temp = winnerProfile;
-                        winnerProfile = secondPlaceProfile;
-                        secondPlaceProfile = temp;
-                    }
-                    else if (winnerProfile.timeInSeconds > secondPlaceProfile.timeInSeconds)
-                    {
-                        PlayerProfile temp = new PlayerProfile();
-                        temp = winnerProfile;
-                        winnerProfile = secondPlaceProfile;
-                        secondPlaceProfile = temp;
+                        if (mjb.Players[1].AmountOfBlueTilesEnlightened == mjb.Players[0].AmountOfBlueTilesEnlightened)
+                        {
+                            if (mjb.Players[1].AmountOfOrders > mjb.Players[0].AmountOfOrders)
+                            {
+                                winnerProfile = mjb.Players[0];
+                                secondPlaceProfile = mjb.Players[1];
+                            }
+                            else if (mjb.Players[1].AmountOfOrders == mjb.Players[0].AmountOfOrders)
+                            {
+                                if (mjb.Players[1].timeInSeconds > mjb.Players[0].timeInSeconds)
+                                {
+                                    winnerProfile = mjb.Players[0];
+                                    secondPlaceProfile = mjb.Players[1];
+                                }
+                                else
+                                {
+                                    winnerProfile = mjb.Players[1];
+                                    secondPlaceProfile = mjb.Players[0];
+                                }
+                            }
+                            else
+                            {
+                                winnerProfile = mjb.Players[1];
+                                secondPlaceProfile = mjb.Players[0];
+                            }
+                        }
+                        else
+                        {
+                            winnerProfile = mjb.Players[1];
+                            secondPlaceProfile = mjb.Players[0];
+                        }
                     }
                 }
                 break;
             case "hard":
-                foreach (var item in mjb.PlayersHard)
+                if (mjb.PlayersHard[0].Nickname == winner)
                 {
-                    if (mjb.PlayersHard.Count == 2)
+                    if (mjb.PlayersHard[0].Nickname == winner)
                     {
-                        if (item.Nickname == winner)
+                        if (mjb.PlayersHard[0].AmountOfBlueTilesEnlightened == mjb.PlayersHard[1].AmountOfBlueTilesEnlightened)
                         {
-                            winnerProfile = item;
+                            if (mjb.PlayersHard[0].AmountOfOrders > mjb.PlayersHard[1].AmountOfOrders)
+                            {
+                                winnerProfile = mjb.PlayersHard[1];
+                                secondPlaceProfile = mjb.PlayersHard[0];
+                            }
+                            else if (mjb.PlayersHard[0].AmountOfOrders == mjb.PlayersHard[1].AmountOfOrders)
+                            {
+                                if (mjb.PlayersHard[0].timeInSeconds > mjb.PlayersHard[1].timeInSeconds)
+                                {
+                                    winnerProfile = mjb.PlayersHard[1];
+                                    secondPlaceProfile = mjb.PlayersHard[0];
+                                }
+                                else
+                                {
+                                    winnerProfile = mjb.PlayersHard[0];
+                                    secondPlaceProfile = mjb.PlayersHard[1];
+                                }
+                            }
+                            else
+                            {
+                                winnerProfile = mjb.PlayersHard[0];
+                                secondPlaceProfile = mjb.PlayersHard[1];
+                            }
                         }
                         else
                         {
-                            secondPlaceProfile = item;
+                            winnerProfile = mjb.PlayersHard[0];
+                            secondPlaceProfile = mjb.PlayersHard[1];
                         }
                     }
                 }
-                if (winnerProfile.AmountOfBlueTilesEnlightened == secondPlaceProfile.AmountOfBlueTilesEnlightened)
+                else if (mjb.PlayersHard[1].Nickname == winner)
                 {
-                    if (winnerProfile.AmountOfOrders > secondPlaceProfile.AmountOfOrders)
+                    if (mjb.PlayersHard[1].AmountOfBlueTilesEnlightened == mjb.PlayersHard[0].AmountOfBlueTilesEnlightened)
                     {
-                        PlayerProfile temp = new PlayerProfile();
-                        temp = winnerProfile;
-                        winnerProfile = secondPlaceProfile;
-                        secondPlaceProfile = temp;
+                        if (mjb.PlayersHard[1].AmountOfOrders > mjb.PlayersHard[0].AmountOfOrders)
+                        {
+                            winnerProfile = mjb.PlayersHard[0];
+                            secondPlaceProfile = mjb.PlayersHard[1];
+                        }
+                        else if (mjb.PlayersHard[1].AmountOfOrders == mjb.PlayersHard[0].AmountOfOrders)
+                        {
+                            if (mjb.PlayersHard[1].timeInSeconds > mjb.PlayersHard[0].timeInSeconds)
+                            {
+                                winnerProfile = mjb.PlayersHard[0];
+                                secondPlaceProfile = mjb.PlayersHard[1];
+                            }
+                            else
+                            {
+                                winnerProfile = mjb.PlayersHard[1];
+                                secondPlaceProfile = mjb.PlayersHard[0];
+                            }
+                        }
+                        else
+                        {
+                            winnerProfile = mjb.PlayersHard[1];
+                            secondPlaceProfile = mjb.PlayersHard[0];
+                        }
                     }
-                    else if (winnerProfile.timeInSeconds > secondPlaceProfile.timeInSeconds)
+                    else
                     {
-                        PlayerProfile temp = new PlayerProfile();
-                        temp = winnerProfile;
-                        winnerProfile = secondPlaceProfile;
-                        secondPlaceProfile = temp;
+                        winnerProfile = mjb.PlayersHard[1];
+                        secondPlaceProfile = mjb.PlayersHard[0];
                     }
                 }
-                break;
-            default:
+
                 break;
         }
 
@@ -571,7 +671,7 @@ public class MultiplayerManager : MonoBehaviour
             resultsLabel.text = "Results";
             resultsOk.text = "Ok";
 
-            sm.winnerNameLabel.text = "Winner:\n" + winner;
+            sm.winnerNameLabel.text = "Winner:\n" + winnerProfile.Nickname;
             sm.winnerData.text = string.Format("Amount of blue tiles enlighted: {0}\nAmount of orders used: {1}\nNeeded time to solve: {2} seconds", winnerProfile.AmountOfBlueTilesEnlightened, winnerProfile.AmountOfOrders, winnerProfile.timeInSeconds);
 
             sm.secondPlaceNameLabel.text = "Second place:\n" + secondPlaceProfile.Nickname;
@@ -582,7 +682,7 @@ public class MultiplayerManager : MonoBehaviour
             resultsLabel.text = "Резултати";
             resultsOk.text = "Окей";
 
-            sm.winnerNameLabel.text = "Победител:\n" + winner;
+            sm.winnerNameLabel.text = "Победител:\n" + winnerProfile.Nickname;
             sm.winnerData.text = string.Format("Осветени полета: {0}\nБрой използвани команди: {1}\nНужно време за решаване: {2} секунди", winnerProfile.AmountOfBlueTilesEnlightened, winnerProfile.AmountOfOrders, winnerProfile.timeInSeconds);
 
             sm.secondPlaceNameLabel.text = "Губещ:\n" + secondPlaceProfile.Nickname;
@@ -604,12 +704,62 @@ public class MultiplayerManager : MonoBehaviour
         switch (PlayerPrefs.GetString("diff"))
         {
             case "easy":
-                mjb.Players.Clear();
-                mjb.EasyLevel = "";
+                /*
+                foreach (var item in mjb.Players)
+                {
+                    if (item.Nickname == username)
+                    {
+                        mjb.Players.Remove(item);
+                    }
+                }
+                */
+
+                bool deleteData = true;
+
+                foreach (var item in mjb.Players)
+                {
+                    if (item.showed == false)
+                    {
+                        deleteData = false;
+                        break;
+                    }
+                }
+
+                if (deleteData)
+                {
+                    mjb.Players.Clear();
+                    mjb.EasyLevel = "";
+                }
+
                 break;
             case "hard":
-                mjb.PlayersHard.Clear();
-                mjb.HardLevel = "";
+                /*
+                foreach (var item in mjb.PlayersHard)
+                {
+                    if (item.Nickname == username)
+                    {
+                        mjb.PlayersHard.Remove(item);
+                    }
+                }
+                */
+
+                deleteData = true;
+
+                foreach (var item in mjb.PlayersHard)
+                {
+                    if (item.showed == false)
+                    {
+                        deleteData = false;
+                        break;
+                    }
+                }
+
+                if (deleteData)
+                {
+                    mjb.PlayersHard.Clear();
+                    mjb.HardLevel = "";
+                }
+
                 break;
             default:
                 mjb.Players.Clear();
@@ -705,7 +855,9 @@ public class MultiplayerManager : MonoBehaviour
 
     public void UploadInServer()
     {
+        uploadinJSON = true;
         ftpClient.upload(@"Test.json", jsonPath);
+        uploadinJSON = false;
     }
 
     public void ClearDataInTheServer()

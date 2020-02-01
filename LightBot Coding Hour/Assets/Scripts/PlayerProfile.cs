@@ -9,4 +9,5 @@ public class PlayerProfile
     public int AmountOfOrders;
     public int AmountOfBlueTilesEnlightened;
     public int timeInSeconds;
+    public bool showed;
 }

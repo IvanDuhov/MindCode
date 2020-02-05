@@ -9,6 +9,8 @@ using Newtonsoft.Json.Converters;
 using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Net;
+using System.Threading.Tasks;
 
 public class MultiplayerManager : MonoBehaviour
 {
@@ -164,7 +166,8 @@ public class MultiplayerManager : MonoBehaviour
             SaveToJson(Mjb, jsonPath);
 
             // Uploading the JSON to the FTP server
-            ftpClient.upload(@"Test.json", jsonPath);
+            //ftpClient.upload(@"Test.json", jsonPath);
+            UploadInServer();
 
             // Triggering again the auto updation of the JSON file from the FTP server
             uploadinJSON = false;
@@ -279,7 +282,8 @@ public class MultiplayerManager : MonoBehaviour
         SaveToJson(mjb, jsonPath);
 
         // Uploading the JSON to the FTP server
-        ftpClient.upload(@"Test.json", jsonPath);
+        //ftpClient.upload(@"Test.json", jsonPath);
+        UploadInServer();
 
         // Triggering again the auto updation of the JSON file from the FTP server
         uploadinJSON = false;
@@ -796,7 +800,10 @@ public class MultiplayerManager : MonoBehaviour
 
         if (hasInternet)
         {
-            ftpClient.download(@"/Test.json", jsonPath);
+            // ftpClient.download(@"/Test.json", jsonPath);
+            //downloadWithFTP("ftp://ftp.snejankagd.com//Test.json", jsonPath, "duhov@snejankagd.com", "123123");
+
+            StartCoroutine(DownloadDataFromTheSerer());
 
             jsonUpdated = true;
         }
@@ -856,7 +863,7 @@ public class MultiplayerManager : MonoBehaviour
     public void UploadInServer()
     {
         uploadinJSON = true;
-        ftpClient.upload(@"Test.json", jsonPath);
+        StartCoroutine(UploadDataInTheServer());
         uploadinJSON = false;
     }
 
@@ -869,11 +876,139 @@ public class MultiplayerManager : MonoBehaviour
         mjb.PlayersHard.Clear();
         mjb.EasyLevel = "";
         mjb.HardLevel = "";
+        mjb.CurrentlyPlaying = false;
 
         SaveToJson(mjb, jsonPath);
 
         UploadInServer();
+        print("Done?");
 
         uploadinJSON = false;
     }
+
+    private async void downloadWithFTP(string ftpUrl, string savePath = "", string userName = "", string password = "")
+    {
+
+        FtpWebRequest request = (FtpWebRequest)WebRequest.Create(new Uri(ftpUrl));
+        //request.Proxy = null;
+
+        request.UsePassive = true;
+        request.UseBinary = true;
+        request.KeepAlive = true;
+
+        //If username or password is NOT null then use Credential
+        if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
+        {
+            request.Credentials = new NetworkCredential(userName, password);
+        }
+
+        request.Method = WebRequestMethods.Ftp.DownloadFile;
+
+        //If savePath is NOT null, we want to save the file to path
+        //If path is null, we just want to return the file as array
+        if (!string.IsNullOrEmpty(savePath))
+        {
+            downloadAndSave(request.GetResponse(), savePath);
+        }
+        else
+        {
+            downloadAsbyteArray(request.GetResponse());
+        }
+    }
+
+    byte[] downloadAsbyteArray(WebResponse request)
+    {
+        using (Stream input = request.GetResponseStream())
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while (input.CanRead && (read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+    }
+
+    void downloadAndSave(WebResponse request, string savePath)
+    {
+        Stream reader = request.GetResponseStream();
+
+        //Create Directory if it does not exist
+        if (!Directory.Exists(Path.GetDirectoryName(savePath)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+        }
+
+        FileStream fileStream = new FileStream(savePath, FileMode.Create);
+
+
+        int bytesRead = 0;
+        byte[] buffer = new byte[2048];
+
+        while (true)
+        {
+            bytesRead = reader.Read(buffer, 0, buffer.Length);
+
+            if (bytesRead == 0)
+                break;
+
+            fileStream.Write(buffer, 0, bytesRead);
+        }
+        fileStream.Close();
+    }
+
+    private async void UpdateJSONUsedInTask()
+    {
+        try
+        {
+            string filename = Path.GetFileName(jsonPath);
+
+            FtpWebRequest ftp = (FtpWebRequest)FtpWebRequest.Create("ftp://ftp.snejankagd.com//Test.json");
+            ftp.Credentials = new NetworkCredential("duhov@snejankagd.com", "123123");
+
+            ftp.KeepAlive = true;
+            ftp.UseBinary = true;
+            ftp.Method = WebRequestMethods.Ftp.UploadFile;
+
+            FileStream fs = File.OpenRead(jsonPath);
+            byte[] buffer = new byte[fs.Length];
+            await fs.ReadAsync(buffer, 0, buffer.Length);
+            await fs.FlushAsync();
+            fs.Close();
+
+            Stream ftpstream = ftp.GetRequestStream();
+            await ftpstream.WriteAsync(buffer, 0, buffer.Length);
+            await ftpstream.FlushAsync();
+            ftpstream.Close();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public IEnumerator DownloadDataFromTheSerer()
+    {
+        Task t = Task.Run(() => downloadWithFTP("ftp://ftp.snejankagd.com//Test.json", jsonPath, "duhov@snejankagd.com", "123123"));
+
+        while (!t.IsCompleted)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public IEnumerator UploadDataInTheServer()
+    {
+        Task t = Task.Run(() => UpdateJSONUsedInTask());
+
+        while (!t.IsCompleted)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
 }

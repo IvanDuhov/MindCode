@@ -1482,6 +1482,7 @@ public class Character : MonoBehaviour
                 background.gameObject.SetActive(true);
                 stars.sprite = zerostar;
 
+                // If it is in multiplayer we change the position of the restart button in order to be in the cetnerm where usually the forward button stays
                 if (multiplayer)
                 {
                     GameObject.Find("Restart").GetComponent<Transform>().localPosition = new Vector3(10, -85, 0);

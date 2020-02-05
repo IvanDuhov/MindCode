@@ -1591,7 +1591,6 @@ public class Character : MonoBehaviour
             {
                 MultiplayerManager.SaveToJson(mj, mm.jsonPath);
                 mm.UploadInServer();
-                //mm.UploadLagLessInTheFTP();
                 betterResults = false;
             }
 
@@ -1621,7 +1620,6 @@ public class Character : MonoBehaviour
                                 if (item.AmountOfOrders != bestOrdersAmount || item.AmountOfBlueTilesEnlightened != maxBlueTiles || bestTime != item.timeInSeconds)
                                 {
                                     mm.UploadInServer();
-                                   // mm.UploadLagLessInTheFTP();
                                     print(string.Format("Server orders:{0} vs {1} local, server blue tiles:{2} vs {3} local, server time: {4} vs {5} local", item.AmountOfOrders, bestOrdersAmount, item.AmountOfBlueTilesEnlightened, maxBlueTiles, item.timeInSeconds, bestTime));
                                     print("There was misdata in the server but it was reuploaded, so no worries!");
                                 }
@@ -1640,7 +1638,6 @@ public class Character : MonoBehaviour
                                 if (item.AmountOfOrders != bestOrdersAmount || item.AmountOfBlueTilesEnlightened != maxBlueTiles || bestTime != item.timeInSeconds)
                                 {
                                     mm.UploadInServer();
-                                   // mm.UploadLagLessInTheFTP();
                                     print("There was misdata in the server but it was reuploaded, so no worries!");
                                 }
 

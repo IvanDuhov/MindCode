@@ -801,7 +801,9 @@ public class MultiplayerManager : MonoBehaviour
         if (hasInternet)
         {
             // ftpClient.download(@"/Test.json", jsonPath);
-            downloadWithFTP("ftp://ftp.snejankagd.com//Test.json", jsonPath, "duhov@snejankagd.com", "123123");
+            //downloadWithFTP("ftp://ftp.snejankagd.com//Test.json", jsonPath, "duhov@snejankagd.com", "123123");
+
+            StartCoroutine(DownloadDataFromTheSerer());
 
             jsonUpdated = true;
         }
@@ -861,8 +863,7 @@ public class MultiplayerManager : MonoBehaviour
     public void UploadInServer()
     {
         uploadinJSON = true;
-        StartCoroutine(LagFixer());
-        //UploadLagLessInTheFTP();
+        StartCoroutine(UploadDataInTheServer());
         uploadinJSON = false;
     }
 
@@ -882,13 +883,12 @@ public class MultiplayerManager : MonoBehaviour
         UploadInServer();
         print("Done?");
 
-        //UploadInServer();
-
         uploadinJSON = false;
     }
 
-    private byte[] downloadWithFTP(string ftpUrl, string savePath = "", string userName = "", string password = "")
+    private async void downloadWithFTP(string ftpUrl, string savePath = "", string userName = "", string password = "")
     {
+
         FtpWebRequest request = (FtpWebRequest)WebRequest.Create(new Uri(ftpUrl));
         //request.Proxy = null;
 
@@ -909,11 +909,10 @@ public class MultiplayerManager : MonoBehaviour
         if (!string.IsNullOrEmpty(savePath))
         {
             downloadAndSave(request.GetResponse(), savePath);
-            return null;
         }
         else
         {
-            return downloadAsbyteArray(request.GetResponse());
+            downloadAsbyteArray(request.GetResponse());
         }
     }
 
@@ -962,7 +961,7 @@ public class MultiplayerManager : MonoBehaviour
         fileStream.Close();
     }
 
-    public async void UploadLagLessInTheFTP()
+    private async void UpdateJSONUsedInTask()
     {
         try
         {
@@ -992,10 +991,19 @@ public class MultiplayerManager : MonoBehaviour
         }
     }
 
-    public IEnumerator LagFixer()
+    public IEnumerator DownloadDataFromTheSerer()
     {
-        Task t = Task.Run(() => UploadLagLessInTheFTP());
+        Task t = Task.Run(() => downloadWithFTP("ftp://ftp.snejankagd.com//Test.json", jsonPath, "duhov@snejankagd.com", "123123"));
 
+        while (!t.IsCompleted)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public IEnumerator UploadDataInTheServer()
+    {
+        Task t = Task.Run(() => UpdateJSONUsedInTask());
 
         while (!t.IsCompleted)
         {

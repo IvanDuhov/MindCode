@@ -61,13 +61,18 @@ public class SpriteManager : MonoBehaviour
 
     public Button easy;
     public Button hard;
+    public Button play;
 
     public Sprite diffPanel;
     public Sprite diffPanelSelected;
 
+    private MultiplayerManager mm;
+
 
     private void Start()
     {
+        mm = FindObjectOfType<MultiplayerManager>();
+
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             Translate();
@@ -279,19 +284,55 @@ public class SpriteManager : MonoBehaviour
 
     public void SelectEasyDiff()
     {
-        easy.GetComponent<Image>().sprite = diffPanelSelected;
+        MJ mjb = MultiplayerManager.ReadJson(mm.jsonPath);
 
-        PlayerPrefs.SetString("diff", "easy");
+        print(mjb.Players.Count);
 
-        hard.GetComponent<Image>().sprite = diffPanel;
+        if (mjb.Players.Count >= 2)
+        {
+            easy.enabled = false;
+            play.enabled = false;
+
+            easy.GetComponent<CameraTip>().enabled = true;
+        }
+        else
+        {
+            easy.GetComponent<CameraTip>().enabled = false;
+
+            play.enabled = true;
+            easy.enabled = true;
+
+            easy.GetComponent<Image>().sprite = diffPanelSelected;
+
+            PlayerPrefs.SetString("diff", "easy");
+
+            hard.GetComponent<Image>().sprite = diffPanel;
+        }
     }
 
     public void SelectHardDiff()
     {
-        hard.GetComponent<Image>().sprite = diffPanelSelected;
+        MJ mjb = MultiplayerManager.ReadJson(mm.jsonPath);
 
-        PlayerPrefs.SetString("diff", "hard");
+        if (mjb.PlayersHard.Count >= 2)
+        {
+            hard.enabled = false;
+            play.enabled = false;
 
-        easy.GetComponent<Image>().sprite = diffPanel;
+            hard.GetComponent<CameraTip>().enabled = true;
+        }
+        else
+        {
+            hard.GetComponent<CameraTip>().enabled = false;
+
+            play.enabled = true;
+            hard.enabled = true;
+
+            hard.GetComponent<Image>().sprite = diffPanelSelected;
+
+            PlayerPrefs.SetString("diff", "hard");
+
+            easy.GetComponent<Image>().sprite = diffPanel;
+        }
     }
 }

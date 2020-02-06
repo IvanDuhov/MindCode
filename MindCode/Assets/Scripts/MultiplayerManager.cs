@@ -298,7 +298,7 @@ public class MultiplayerManager : MonoBehaviour
         while (signedIn)
         {
             // Check the ftp file for data every 1/4 sec
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(1f);
 
             MJ mjb = ReadJson(jsonPath);
 
@@ -442,6 +442,33 @@ public class MultiplayerManager : MonoBehaviour
 
         MJ mjb = ReadJson(jsonPath);
         mjb.CurrentlyPlaying = false;
+
+        switch (PlayerPrefs.GetString("diff"))
+        {
+            case "easy":
+                foreach (var item in mjb.Players)
+                {
+                    if (item.Nickname == username)
+                    {
+                        item.showed = true;
+                        break;
+                    }
+                }
+                break;
+            case "hard":
+                foreach (var item in mjb.PlayersHard)
+                {
+                    if (item.Nickname == username)
+                    {
+                        item.showed = true;
+                        break;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
         SaveToJson(mjb, jsonPath);
         UploadInServer();
         showWinner = true;
@@ -453,6 +480,8 @@ public class MultiplayerManager : MonoBehaviour
     {
         var allMM = FindObjectsOfType<MultiplayerManager>();
         print(allMM.Length);
+
+        StartCoroutine(DownloadDataFromTheSerer());
 
         foreach (var item in allMM)
         {
@@ -514,7 +543,6 @@ public class MultiplayerManager : MonoBehaviour
         }
 
         SaveToJson(mjb, jsonPath);
-        UploadInServer();
 
         PlayerProfile winnerProfile = new PlayerProfile();
         PlayerProfile secondPlaceProfile = new PlayerProfile();
@@ -694,10 +722,14 @@ public class MultiplayerManager : MonoBehaviour
 
         }
 
+        print(winnerProfile.Nickname + " is the fuckign winner  with " + winnerProfile.AmountOfBlueTilesEnlightened);
+
         sm.place1.sprite = sm.ReturnAvatar(winnerProfile);
         sm.place2.sprite = sm.ReturnAvatar(secondPlaceProfile);
 
         showWinner = false;
+
+        UploadInServer();
     }
 
     public void Ok()

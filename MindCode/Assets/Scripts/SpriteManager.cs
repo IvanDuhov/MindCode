@@ -286,11 +286,9 @@ public class SpriteManager : MonoBehaviour
     {
         MJ mjb = MultiplayerManager.ReadJson(mm.jsonPath);
 
-        print(mjb.Players.Count);
-
         if (mjb.Players.Count >= 2)
         {
-            easy.enabled = false;
+            // easy.enabled = false;
             play.enabled = false;
 
             easy.GetComponent<CameraTip>().enabled = true;
@@ -316,7 +314,7 @@ public class SpriteManager : MonoBehaviour
 
         if (mjb.PlayersHard.Count >= 2)
         {
-            hard.enabled = false;
+            // hard.enabled = false;
             play.enabled = false;
 
             hard.GetComponent<CameraTip>().enabled = true;

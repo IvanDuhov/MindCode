@@ -66,8 +66,10 @@ public class SpriteManager : MonoBehaviour
     public Sprite diffPanel;
     public Sprite diffPanelSelected;
 
-    private MultiplayerManager mm;
+    public Transform multiHelp;
+    public Text multiHelpText;
 
+    private MultiplayerManager mm;
 
     private void Start()
     {
@@ -85,6 +87,15 @@ public class SpriteManager : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "MultiplayerMenu")
         {
+            if (PlayerPrefs.GetString("English") == "true")
+            {
+                multiHelpText.text = "The multiplayer is an actual battle between two players. Depending on the difficulty a map level is being randomly selected and the players need to provide the best solution they can come up with. They have 90 seconds to provide their solution by clicking on the green play button. The game rules are the same as in the single-player. The winner is the one who has lighten up most blue tiles if the enlighten blue tiles are even, then the number of orders used is compared, if it is even, too, then the time need to the players to provide the solution. Only the best-provided solution is taken into account, which means if you first provide a solution enlighting two blue tiles and then try a solution and it enlights only two tiles, that solution wouldn't be uploaded and used to determine the winner of the battle.";
+            }
+            else
+            {
+                multiHelpText.text = "Мултиплеърът е битка между двама играчи. В зависимост от трудността, нивото, на което ще се съревновават двамата играчи, се избира на случаен принцип. Те разполагат с 90 секунди, за да осигурят своето възможно най-добро решение. Правилата на играта са същите като в самостоятелната игра. Победител е този, който е светнал повечето сини полета, ако осветените сини полета са равен брой, тогава се сравнява броят на използваните команди, ако той също е равен, тогава се сравнява времето, за което играчите са измислили решенията си. Взема се предвид само най-доброто предоставено решение, което означава че, ако първото предоставено решение е осветило две сини полета, а след това играчът изпробва друго решение решение и то освети само две сини полета, това решение няма да бъде качено и използвано за определяне на победителя в двубоя.";
+            }
+
             switch (PlayerPrefs.GetString("diff"))
             {
                 case "easy":
@@ -95,6 +106,16 @@ public class SpriteManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+    public void MultiplayerHelpMenu()
+    {
+        multiHelp.gameObject.SetActive(true);
+    }
+
+    public void MultiplayerHelpOk()
+    {
+        multiHelp.gameObject.SetActive(false);
     }
 
     public void SelectAvatar1()
@@ -284,53 +305,19 @@ public class SpriteManager : MonoBehaviour
 
     public void SelectEasyDiff()
     {
-        MJ mjb = MultiplayerManager.ReadJson(mm.jsonPath);
+        easy.GetComponent<Image>().sprite = diffPanelSelected;
 
-        if (mjb.Players.Count >= 2)
-        {
-            // easy.enabled = false;
-            play.enabled = false;
+        PlayerPrefs.SetString("diff", "easy");
 
-            easy.GetComponent<CameraTip>().enabled = true;
-        }
-        else
-        {
-            easy.GetComponent<CameraTip>().enabled = false;
-
-            play.enabled = true;
-            easy.enabled = true;
-
-            easy.GetComponent<Image>().sprite = diffPanelSelected;
-
-            PlayerPrefs.SetString("diff", "easy");
-
-            hard.GetComponent<Image>().sprite = diffPanel;
-        }
+        hard.GetComponent<Image>().sprite = diffPanel;
     }
 
     public void SelectHardDiff()
     {
-        MJ mjb = MultiplayerManager.ReadJson(mm.jsonPath);
+        hard.GetComponent<Image>().sprite = diffPanelSelected;
 
-        if (mjb.PlayersHard.Count >= 2)
-        {
-            // hard.enabled = false;
-            play.enabled = false;
+        PlayerPrefs.SetString("diff", "hard");
 
-            hard.GetComponent<CameraTip>().enabled = true;
-        }
-        else
-        {
-            hard.GetComponent<CameraTip>().enabled = false;
-
-            play.enabled = true;
-            hard.enabled = true;
-
-            hard.GetComponent<Image>().sprite = diffPanelSelected;
-
-            PlayerPrefs.SetString("diff", "hard");
-
-            easy.GetComponent<Image>().sprite = diffPanel;
-        }
+        easy.GetComponent<Image>().sprite = diffPanel;
     }
 }

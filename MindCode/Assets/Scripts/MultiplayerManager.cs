@@ -53,6 +53,12 @@ public class MultiplayerManager : MonoBehaviour
 
     private PlayerProfile myProfile;
 
+    public Transform sorryBusyServer;
+    public Text busyServerText;
+
+    public Transform multiHelp;
+    public Text multiHelpText;
+
     private void Awake()
     {
         jsonPath = Path.Combine(Application.streamingAssetsPath, filename);
@@ -92,6 +98,7 @@ public class MultiplayerManager : MonoBehaviour
             easyLabel.text = "Easy";
             hardLabel.text = "Hard";
             cancelLabel.text = "Cancel";
+            busyServerText.text = "Our servers are full, please wait or try to select different difficulty.";
         }
         else
         {
@@ -99,10 +106,26 @@ public class MultiplayerManager : MonoBehaviour
             easyLabel.text = "Лесно";
             hardLabel.text = "Трудно";
             cancelLabel.text = "Спри";
+            busyServerText.text = "Сървърите ни са пълни, моля изчакайте или изберете друга трудност.";
         }
 
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 300;
+    }
+
+    public void BusyOk()
+    {
+        sorryBusyServer.gameObject.SetActive(false);
+    }
+
+    public void MultiplayerHelpMenu()
+    {
+        multiHelp.gameObject.SetActive(true);
+    }
+
+    public void MultiplayerHelpOk()
+    {
+
     }
 
     // Procedure to sign the user that he wished to play multiplayer
@@ -111,6 +134,7 @@ public class MultiplayerManager : MonoBehaviour
         // trigger to stop the repeating downloading of the JSON file from the FTP server and work with the latest one
         uploadinJSON = true;
 
+        // Unsigning if the user doesn;t want to play multiplayer anymore
         if (signedIn)
         {
             signedIn = false;
@@ -182,6 +206,26 @@ public class MultiplayerManager : MonoBehaviour
 
         // Reading the JSON file
         MJ mjb = ReadJson(jsonPath);
+
+        if (PlayerPrefs.GetString("diff") == "easy")
+        {
+            if (mjb.Players.Count >= 2)
+            {
+                sorryBusyServer.gameObject.SetActive(true);
+                return;
+            }
+        }
+        else
+        {
+            if (mjb.PlayersHard.Count >= 2)
+            {
+                sorryBusyServer.gameObject.SetActive(true);
+                return;
+            }
+        }
+
+        // Reading the JSON file
+        mjb = ReadJson(jsonPath);
 
         // Making active the matchamkiing meny, where the user can see for how long he is waiting and how many players there are at the queue
         matchmakingPanel.gameObject.SetActive(true);

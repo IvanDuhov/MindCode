@@ -56,8 +56,6 @@ public class MultiplayerManager : MonoBehaviour
     public Transform sorryBusyServer;
     public Text busyServerText;
 
-    public Transform multiHelp;
-    public Text multiHelpText;
 
     private void Awake()
     {
@@ -116,16 +114,6 @@ public class MultiplayerManager : MonoBehaviour
     public void BusyOk()
     {
         sorryBusyServer.gameObject.SetActive(false);
-    }
-
-    public void MultiplayerHelpMenu()
-    {
-        multiHelp.gameObject.SetActive(true);
-    }
-
-    public void MultiplayerHelpOk()
-    {
-
     }
 
     // Procedure to sign the user that he wished to play multiplayer

@@ -1,0 +1,28 @@
+{
+    "LanguageAverage": 0,
+    "LanguageScore": 0,
+    "LanguageCount": 0,
+    "LanguageMax": 0,
+
+    "MemoryAverage": 0,
+    "MemoryScore": 0,
+    "MemoryCount": 0,
+    "MemoryMax": 0,
+
+    "ProblemSolvingAverage": 0,
+    "ProblemSolvingScore": 0,
+    "ProblemSolvingCount": 0,
+    "ProblemSolvingMax": 0,
+
+    "FocusAverage": 0,
+    "FocusScore": 0,
+    "FocusCount": 0,
+    "FocusgMax": 0,
+
+    "MentalAverage": 0,
+    "MentalScore": 0,
+    "MentalCount": 0,
+    "MentalMax": 0,
+
+    "overall": 0
+}

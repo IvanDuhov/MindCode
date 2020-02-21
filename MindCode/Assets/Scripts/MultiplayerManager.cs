@@ -1,5 +1,4 @@
-﻿using FTPClient;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -26,8 +25,6 @@ public class MultiplayerManager : MonoBehaviour
 
     public bool jsonUpdated = false;
     public bool uploadinJSON = false;
-
-    FTP ftpClient;
 
     public Transform matchmakingPanel;
 
@@ -56,11 +53,9 @@ public class MultiplayerManager : MonoBehaviour
     public Transform sorryBusyServer;
     public Text busyServerText;
 
-
     private void Awake()
     {
         jsonPath = Path.Combine(Application.streamingAssetsPath, filename);
-        ftpClient = new FTP(@"ftp://ftp.snejankagd.com/", "duhov@snejankagd.com", "123123");
 
         username = PlayerPrefs.GetString("nickname");
 

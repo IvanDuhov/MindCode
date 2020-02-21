@@ -1,0 +1,120 @@
+{
+    "LanguageScore": 0,
+    "LanguageCount": 0,
+    "LanguageAverage": 0,
+    "LanguageHistory": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "WordFormationScore": 0,
+    "WordFormationCount": 0,
+    "WordFormationAverage": 0,
+    "WordFormationProgress": 0.0,
+    "WordFormationHighest": 0,
+    "WordFormationHistory": [
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "MemoryScore": 0,
+    "MemoryCount": 0,
+    "MemoryAverage": 0,
+    "MemoryHistory": [
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "MemoryGridScore": 0,
+    "MemoryGridCount": 0,
+    "MemoryGridAverage": 0,
+    "MemoryGridProgress": 0.0,
+    "MemoryGridHighest": 0,
+    "MemoryGridHistory": [
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "ProblemSolvingScore": 0,
+    "ProblemSolvingCount": 0,
+    "ProblemAverage": 0,
+    "ProblemHistory": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TrainScore": 0,
+    "TrainCount": 0,
+    "TrainAverage": 0,
+    "TrainProgress": 0.0,
+    "TrainHighest": 0,
+    "TrainHistory": [
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "FocusScore": 1000,
+    "FocusCount": 0,
+    "FocusAverage": 3885,
+    "FocusHistory": [
+        1980,
+        3500,
+        2000,
+        1636,
+        3885
+    ],
+    "CardSortScore": 6300,
+    "CardSortCount": 3,
+    "CardSortAverage": 2100,
+    "CardSortSuccessRate": 97.37,
+    "CardSortProgress": 96.2264,
+    "CardSortHighest": 3120,
+    "CardSortHistory": [
+        0,
+        0,
+        0,
+        0,
+        3120
+    ],
+    "MentalAScore": 0,
+    "MentalACount": 0,
+    "MentalAverage": 103,
+    "MentalHistory": [
+        0,
+        0,
+        0,
+        0,
+        640,
+        60,
+        103
+    ],
+    "TrueColourScore": 1300,
+    "TrueColourCount": 3,
+    "TrueColourAverage": 433,
+    "TrueColourProgress": 71.4286,
+    "TrueColourHighest": 640,
+    "TrueColourHistory": [
+        0,
+        0,
+        640,
+        60,
+        600
+    ],
+    "overall": 0
+}

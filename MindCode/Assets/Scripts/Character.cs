@@ -146,7 +146,6 @@ public class Character : MonoBehaviour
 
             forwardBTN.gameObject.SetActive(false);
 
-
             StartCoroutine(mm.BattleTimer(BTimerText));
 
             StartCoroutine(SyncLocalDataWithServer());

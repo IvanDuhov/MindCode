@@ -497,8 +497,94 @@ public class MultiplayerManager : MonoBehaviour
         }
 
         SaveToJson(mjb, jsonPath);
-        UploadInServer();
         showWinner = true;
+        UploadInServer();
+
+        bool waitingForOpponed = true;
+
+        while (waitingForOpponed)
+        {
+            waitingForOpponed = false;
+
+            mjb = ReadJson(jsonPath);
+
+            // Checking if all players are ready for the results to be shown
+            switch (PlayerPrefs.GetString("diff"))
+            {
+                case "easy":
+                    foreach (var item in mjb.Players)
+                    {
+                        if (!item.showed)
+                        {
+                            waitingForOpponed = true;
+                            break;
+                        }
+                    }
+                    break;
+                case "hard":
+                    foreach (var item in mjb.PlayersHard)
+                    {
+                        if (!item.showed)
+                        {
+                            waitingForOpponed = true;
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            // Hitting the database that this user is ready to see the data
+            switch (PlayerPrefs.GetString("diff"))
+            {
+                case "easy":
+                    foreach (var item in mjb.Players)
+                    {
+                        if (item.Nickname == username)
+                        {
+                            item.showed = true;
+                            break;
+                        }
+                    }
+                    break;
+                case "hard":
+                    foreach (var item in mjb.PlayersHard)
+                    {
+                        if (item.Nickname == username)
+                        {
+                            item.showed = true;
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            print("This user should be shown.");
+
+            SaveToJson(mjb, jsonPath);
+
+            // Setting up the battle timer
+            GameObject mmTimer = GameObject.Find("MMTimer");
+            GameObject playButton = GameObject.Find("Start");
+
+            playButton.GetComponent<Button>().enabled = false;
+            print("Play button should be disabled");
+
+            if (PlayerPrefs.GetString("English") == "true")
+            {
+                mmTimer.GetComponentInChildren<Text>().text = "Waiting...";
+            }
+            else
+            {
+                mmTimer.GetComponentInChildren<Text>().text = "Изчакване...";
+            }
+
+            UploadInServer();
+
+            yield return new WaitForSeconds(1f);
+        }
 
         SceneManager.LoadScene("MultiplayerMenu");
     }

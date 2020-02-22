@@ -21,7 +21,7 @@ public class Stats : MonoBehaviour
         float averageTime;
         float averageOrders;
 
-        if (so.totalGames != 0)
+        if (so.totalGames != 0 && so.wonGames != 0)
         {
             winrate = so.wonGames / so.totalGames * 100;
             averageTime = so.totalSeconds / so.wonGames;

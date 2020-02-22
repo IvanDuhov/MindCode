@@ -302,6 +302,11 @@ public class UI : MonoBehaviour
         SceneManager.LoadScene("Menu");
     }
 
+    public void Statistics()
+    {
+        SceneManager.LoadScene("Stats");
+    }
+
     public void Exit()
     {
         Application.Quit();

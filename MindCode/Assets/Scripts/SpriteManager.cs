@@ -68,6 +68,7 @@ public class SpriteManager : MonoBehaviour
 
     public Transform multiHelp;
     public Text multiHelpText;
+    public Text statistics;
 
     private MultiplayerManager mm;
 
@@ -234,6 +235,7 @@ public class SpriteManager : MonoBehaviour
             optionsLanguage.text = "Select language";
             optionsVolume.text = "Control your music volume";
             optionsSave.text = "Save";
+            statistics.text = "Statistics";
         }
         else
         {
@@ -253,6 +255,7 @@ public class SpriteManager : MonoBehaviour
             optionsLanguage.text = "Избери си език";
             optionsVolume.text = "Контролирай силата на звука";
             optionsSave.text = "Запази";
+            statistics.text = "Статистики";
         }
     }
 

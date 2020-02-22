@@ -53,6 +53,8 @@ public class MultiplayerManager : MonoBehaviour
     public Transform sorryBusyServer;
     public Text busyServerText;
 
+    public static string localDBPath = Path.Combine(Application.streamingAssetsPath, "LocalDB.json");
+
     private void Awake()
     {
         jsonPath = Path.Combine(Application.streamingAssetsPath, filename);
@@ -835,6 +837,22 @@ public class MultiplayerManager : MonoBehaviour
 
         }
 
+        // Gathering the data for the local Database
+        string localDB = Path.Combine(Application.streamingAssetsPath, "LocalDB.json");
+        StatObject so = ReadLocalDBJson(localDB);
+        so.totalGames++;
+
+        // Adding data for the statistics
+        if (winnerProfile.Nickname == username)
+        {
+            so.wonGames++;
+            so.totalSeconds = winnerProfile.timeInSeconds;
+            so.totalOrders = winnerProfile.AmountOfOrders;
+        }
+
+        // Saving the data in the local db json file
+        SaveToJson(so, localDB);
+
         print(winnerProfile.Nickname + " is the fuckign winner  with " + winnerProfile.AmountOfBlueTilesEnlightened);
 
         sm.place1.sprite = sm.ReturnAvatar(winnerProfile);
@@ -991,7 +1009,35 @@ public class MultiplayerManager : MonoBehaviour
         return mj;
     }
 
+    public static StatObject ReadLocalDBJson(string path)
+    {
+        var setting = new JsonSerializerSettings();
+
+        setting.Formatting = Newtonsoft.Json.Formatting.Indented;
+        setting.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        setting.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
+
+        var fileContent = File.ReadAllText(path);
+        StatObject mj = JsonConvert.DeserializeObject<StatObject>(fileContent);
+
+        return mj;
+    }
+
     public static void SaveToJson(MJ mjb, string path)
+    {
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Converters.Add(new JavaScriptDateTimeConverter());
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+
+        using (StreamWriter sw = new StreamWriter(path))
+        using (JsonWriter writer = new JsonTextWriter(sw))
+        {
+            serializer.Serialize(writer, mjb);
+            // {"ExpiryDate":new Date(1230375600000),"Price":0}
+        }
+    }
+
+    public static void SaveToJson(StatObject mjb, string path)
     {
         JsonSerializer serializer = new JsonSerializer();
         serializer.Converters.Add(new JavaScriptDateTimeConverter());

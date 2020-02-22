@@ -53,8 +53,6 @@ public class MultiplayerManager : MonoBehaviour
     public Transform sorryBusyServer;
     public Text busyServerText;
 
-    public static string localDBPath = Path.Combine(Application.streamingAssetsPath, "LocalDB.json");
-
     private void Awake()
     {
         jsonPath = Path.Combine(Application.streamingAssetsPath, filename);

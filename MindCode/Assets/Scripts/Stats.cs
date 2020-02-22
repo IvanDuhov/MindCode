@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.IO;
 
 public class Stats : MonoBehaviour
 {
@@ -12,17 +13,25 @@ public class Stats : MonoBehaviour
 
     void Start()
     {
-        StatObject so = MultiplayerManager.ReadLocalDBJson(MultiplayerManager.localDBPath);
+        string localDBPath = Path.Combine(Application.streamingAssetsPath, "LocalDB.json");
+
+        StatObject so = MultiplayerManager.ReadLocalDBJson(localDBPath);
 
         float winrate;
+        float averageTime;
+        float averageOrders;
 
         if (so.totalGames != 0)
         {
             winrate = so.wonGames / so.totalGames * 100;
+            averageTime = so.totalSeconds / so.wonGames;
+            averageOrders = so.totalOrders / so.wonGames;
         }
         else
         {
             winrate = 0;
+            averageTime = 0;
+            averageOrders = 0;
         }
 
         if (winrate < 50)
@@ -32,8 +41,7 @@ public class Stats : MonoBehaviour
 
         percentage.text = string.Format("{0:00.00}%", winrate);
 
-        float averageTime = so.totalSeconds / so.wonGames;
-        float averageOrders = so.totalOrders / so.wonGames;
+
 
         if (PlayerPrefs.GetString("English") == "true")
         {
